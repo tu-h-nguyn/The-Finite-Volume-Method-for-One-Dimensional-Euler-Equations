@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+title: >-
+  The Finite Volume Method for the One-Dimensional Euler Equations
+message: "If you use this software or the accompanying report, please cite it."
+type: software
+authors:
+  - family-names: Nông
+    given-names: Thanh Toàn
+  - family-names: Nguyễn
+    given-names: Hoàng Tú
+  - family-names: Lê
+    given-names: Minh Tuấn Kiệt
+  - family-names: Đặng
+    given-names: Kim Bảng
+abstract: >-
+  A verified finite-volume solver for the one-dimensional Euler equations:
+  an exact Riemann solver, Lax-Friedrichs / local Lax-Friedrichs / HLL / HLLC
+  fluxes, MUSCL reconstruction with TVD limiters, SSP Runge-Kutta time
+  integration, and a grid-convergence study confirming the design order of
+  each scheme.
+keywords:
+  - computational fluid dynamics
+  - finite volume method
+  - Euler equations
+  - Riemann solver
+  - shock tube
+license: MIT
+version: 1.0.0
+date-released: "2025-01-01"

@@ -104,7 +104,7 @@ function second_order_spatial_solution()
     title('Second-Order Spatial Density Distribution');
     legend('2nd Order Spatial', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/density_spatial2.tex');
+    matlab2tikz('../report/figure/density_spatial2.tex');
     
     % Velocity plot
     figure('Position', [100, 100, 400, 300]);
@@ -115,7 +115,7 @@ function second_order_spatial_solution()
     title('Second-Order Spatial Velocity Distribution');
     legend('2nd Order Spatial', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/velocity_spatial2.tex');
+    matlab2tikz('../report/figure/velocity_spatial2.tex');
     
     % Pressure plot
     figure('Position', [100, 100, 400, 300]);
@@ -126,7 +126,7 @@ function second_order_spatial_solution()
     title('Second-Order Spatial Pressure Distribution');
     legend('2nd Order Spatial', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/pressure_spatial2.tex');
+    matlab2tikz('../report/figure/pressure_spatial2.tex');
 end
 
 function result = minmod(a, b)

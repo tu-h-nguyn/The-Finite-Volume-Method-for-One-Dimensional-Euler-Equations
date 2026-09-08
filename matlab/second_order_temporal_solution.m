@@ -85,7 +85,7 @@ function second_order_temporal_solution()
     title('Second-Order Temporal Density Distribution');
     legend('2nd Order Temporal', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/density_temporal2.tex');
+    matlab2tikz('../report/figure/density_temporal2.tex');
     
     % Velocity plot
     figure('Position', [100, 100, 400, 300]);
@@ -96,7 +96,7 @@ function second_order_temporal_solution()
     title('Second-Order Temporal Velocity Distribution');
     legend('2nd Order Temporal', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/velocity_temporal2.tex');
+    matlab2tikz('../report/figure/velocity_temporal2.tex');
     
     % Pressure plot
     figure('Position', [100, 100, 400, 300]);
@@ -107,7 +107,7 @@ function second_order_temporal_solution()
     title('Second-Order Temporal Pressure Distribution');
     legend('2nd Order Temporal', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/pressure_temporal2.tex');
+    matlab2tikz('../report/figure/pressure_temporal2.tex');
 end
 
 function rhs = calculate_rhs(W, dx, gamma)

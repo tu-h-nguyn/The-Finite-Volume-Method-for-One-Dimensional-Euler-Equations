@@ -80,7 +80,7 @@ function compare_all_methods()
     sgtitle('Comparison of Numerical Methods at t = 0.2');
     
     % Save as TikZ
-    matlab2tikz('../figure/methods_comparison.tex');
+    matlab2tikz('../report/figure/methods_comparison.tex');
     fprintf('Comparison complete. Results saved to methods_comparison.tex\n');
 end
 

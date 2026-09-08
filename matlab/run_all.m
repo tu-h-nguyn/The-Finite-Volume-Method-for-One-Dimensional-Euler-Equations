@@ -67,5 +67,5 @@ function run_all()
     end
     
     fprintf('=== All computations completed! ===\n');
-    fprintf('Check the ../figure/ directory for TikZ output files.\n');
+    fprintf('Check the ../report/figure/ directory for TikZ output files.\n');
 end

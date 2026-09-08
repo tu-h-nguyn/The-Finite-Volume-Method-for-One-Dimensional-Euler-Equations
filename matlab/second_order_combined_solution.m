@@ -85,7 +85,7 @@ function second_order_combined_solution()
     title('Combined Second-Order Density Distribution');
     legend('2nd Order Combined', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/density_combined.tex');
+    matlab2tikz('../report/figure/density_combined.tex');
     
     % Velocity plot
     figure('Position', [100, 100, 400, 300]);
@@ -96,7 +96,7 @@ function second_order_combined_solution()
     title('Combined Second-Order Velocity Distribution');
     legend('2nd Order Combined', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/velocity_combined.tex');
+    matlab2tikz('../report/figure/velocity_combined.tex');
     
     % Pressure plot
     figure('Position', [100, 100, 400, 300]);
@@ -107,7 +107,7 @@ function second_order_combined_solution()
     title('Combined Second-Order Pressure Distribution');
     legend('2nd Order Combined', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/pressure_combined.tex');
+    matlab2tikz('../report/figure/pressure_combined.tex');
 end
 
 function rhs = calculate_rhs_spatial2(W, dx, gamma)

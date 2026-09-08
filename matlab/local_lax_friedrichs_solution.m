@@ -89,7 +89,7 @@ function local_lax_friedrichs_solution()
     title('Local Lax-Friedrichs Density Distribution');
     legend('LLF Solution', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/density_llf.tex');
+    matlab2tikz('../report/figure/density_llf.tex');
     
     % Velocity plot
     figure('Position', [100, 100, 400, 300]);
@@ -100,7 +100,7 @@ function local_lax_friedrichs_solution()
     title('Local Lax-Friedrichs Velocity Distribution');
     legend('LLF Solution', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/velocity_llf.tex');
+    matlab2tikz('../report/figure/velocity_llf.tex');
     
     % Pressure plot
     figure('Position', [100, 100, 400, 300]);
@@ -111,7 +111,7 @@ function local_lax_friedrichs_solution()
     title('Local Lax-Friedrichs Pressure Distribution');
     legend('LLF Solution', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/pressure_llf.tex');
+    matlab2tikz('../report/figure/pressure_llf.tex');
 end
 
 function F = euler_flux(W, gamma)
