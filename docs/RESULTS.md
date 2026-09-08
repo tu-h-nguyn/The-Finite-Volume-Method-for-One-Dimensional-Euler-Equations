@@ -86,3 +86,11 @@ order is measured on a smooth, exactly-advected density wave instead.
 ## 5. Exact wave structure
 
 ![Wave structure](figures/sod_wave_structure.png)
+
+## 6. Time evolution
+
+Produced separately by `python scripts/make_animation.py`, which asks the
+solver for snapshots at evenly spaced times so every frame is a state the
+scheme actually computed.
+
+![Sod evolution](figures/sod_evolution.gif)
