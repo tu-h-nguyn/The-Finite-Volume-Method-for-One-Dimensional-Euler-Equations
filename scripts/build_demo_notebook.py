@@ -256,6 +256,10 @@ def build() -> Path:
         else nbformat.v4.new_code_cell(source)
         for kind, source in CELLS
     ]
+    # nbformat assigns random cell ids, which would make every rebuild dirty the
+    # working tree. Number them instead, so a rebuild is a no-op when nothing changed.
+    for index, cell in enumerate(notebook.cells):
+        cell.id = f"cell-{index:02d}"
     notebook.metadata = {
         "kernelspec": {
             "display_name": "Python 3",
@@ -265,7 +269,13 @@ def build() -> Path:
         "language_info": {"name": "python"},
     }
     client = NotebookClient(
-        notebook, timeout=600, kernel_name="python3", resources={"metadata": {"path": str(ROOT)}}
+        notebook,
+        timeout=600,
+        kernel_name="python3",
+        # Without this, nbclient stamps every cell with wall-clock execution
+        # times, so a rebuild would dirty the file even when nothing changed.
+        record_timing=False,
+        resources={"metadata": {"path": str(ROOT)}},
     )
     client.execute()
     TARGET.parent.mkdir(parents=True, exist_ok=True)

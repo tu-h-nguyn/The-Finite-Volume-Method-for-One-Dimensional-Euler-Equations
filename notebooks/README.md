@@ -11,7 +11,8 @@
 `demo.ipynb` is **generated and executed** by
 [`../scripts/build_demo_notebook.py`](../scripts/build_demo_notebook.py) rather than edited by
 hand, so its committed outputs are always what the current code produces — CI re-executes it on
-every push. Regenerate it with:
+every push. The build is deterministic (numbered cell ids, no execution timestamps), so
+rebuilding it when nothing has changed leaves the working tree clean. Regenerate it with:
 
 ```bash
 pip install -e ".[dev,notebook]"
