@@ -42,7 +42,10 @@ addopts = "-q --strict-markers --doctest-modules"
 filterwarnings = ["error::RuntimeWarning"]
 
 [tool.mypy]
-python_version = "3.10"
+# Deliberately not pinning python_version: mypy would then refuse the PEP 695
+# syntax that recent numpy stubs use, even while running on an interpreter that
+# understands it. Minimum-version enforcement is ruff's target-version plus
+# requires-python above; mypy runs once, on the newest supported interpreter.
 files = ["src/euler1d"]
 ignore_missing_imports = true
 
