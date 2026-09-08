@@ -21,8 +21,6 @@ grid-convergence study that confirms the schemes actually achieve their design o
   Black is the exact solution, colour is the computed one.</em>
 </p>
 
-![Sod shock tube](docs/figures/sod_comparison.png)
-
 ---
 
 ## What is in this repository
@@ -118,6 +116,8 @@ print(l1_error(solution.density, rho_exact, config.dx))
 | 2nd order in time (Heun) | 1.826e-02 | 3.076e-02 | 1.536e-02 | 1.8× smaller |
 | 2nd order in space and time | 5.678e-03 | 9.497e-03 | 4.183e-03 | 5.8× smaller |
 | **HLLC + MUSCL-MC + SSP-RK3** | **3.080e-03** | **5.454e-03** | **2.359e-03** | **10.6× smaller** |
+
+![All six schemes against the exact solution](docs/figures/sod_comparison.png)
 
 Two things worth reading off this table:
 
