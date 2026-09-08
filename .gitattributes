@@ -1,0 +1,15 @@
+# GitHub's language detection counts bytes, so the 650 KB of exploratory
+# notebooks and the 430 KB of LaTeX sources would otherwise drown out the
+# 90 KB Python package that is the actual codebase. Both really are
+# documentation, so mark them as such: the repository then reports Python
+# (and MATLAB, for the original prototype), which is what it contains.
+*.ipynb linguist-documentation
+report/** linguist-documentation
+docs/** linguist-documentation
+
+# Keep notebook diffs readable rather than one enormous JSON line.
+*.ipynb -diff
+
+# Binary assets: never try to merge or diff them as text.
+*.png binary
+*.pdf binary
