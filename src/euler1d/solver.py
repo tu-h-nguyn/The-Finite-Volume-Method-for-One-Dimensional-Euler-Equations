@@ -17,7 +17,7 @@ needed — this is the main structural difference from the MATLAB prototype.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field, replace
 
 import numpy as np
@@ -71,6 +71,7 @@ class Solution:
     steps: int
     config: SolverConfig
     history: list[float] = field(default_factory=list)
+    snapshots: list[tuple[float, np.ndarray]] = field(default_factory=list)
 
     @property
     def primitives(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -154,6 +155,20 @@ def _apply_boundary(U: np.ndarray, boundary: str) -> np.ndarray:
     raise ValueError(f"unknown boundary condition {boundary!r}")
 
 
+def _snapshot_targets(
+    output_times: Sequence[float] | None, t_final: float
+) -> list[float]:
+    """Validate and normalise the requested snapshot times."""
+    if not output_times:
+        return []
+    targets = sorted({float(t) for t in output_times})
+    if targets[0] < 0.0 or targets[-1] > t_final + 1e-14:
+        raise ValueError(
+            f"output_times must lie in [0, {t_final}]; got {targets[0]} .. {targets[-1]}"
+        )
+    return targets
+
+
 def _check_admissible(U: np.ndarray, gamma: float, t: float) -> None:
     rho, _, p = conservative_to_primitive(U, gamma)
     if not (np.all(np.isfinite(U)) and np.all(rho > 0.0) and np.all(p > 0.0)):
@@ -167,6 +182,7 @@ def solve(
     config: SolverConfig,
     initial_condition: Callable[[np.ndarray], np.ndarray] | np.ndarray,
     record_totals: bool = False,
+    output_times: Sequence[float] | None = None,
 ) -> Solution:
     """Integrate the Euler equations to ``config.t_final``.
 
@@ -180,6 +196,13 @@ def solve(
     record_totals:
         Store the total mass after each step, which the tests use to verify
         discrete conservation.
+    output_times:
+        Times at which to keep a copy of the solution, in ``Solution.snapshots``.
+        The time step is clamped so that each one is reached exactly rather than
+        interpolated. Note that clamping changes the step sequence: asking for
+        an intermediate time makes the run land on it exactly, but the states
+        *after* it then differ from an unclamped run by one step's worth of
+        truncation error.
     """
     x = config.cell_centers
     U = (
@@ -214,6 +237,12 @@ def solve(
 
         return rhs
 
+    targets = _snapshot_targets(output_times, config.t_final)
+    snapshots: list[tuple[float, np.ndarray]] = []
+    if targets and targets[0] == 0.0:
+        snapshots.append((0.0, U.copy()))
+        targets.pop(0)
+
     t = 0.0
     step = 0
     while t < config.t_final - 1e-14:
@@ -225,12 +254,24 @@ def solve(
         _check_admissible(U, gamma, t)
         dt = config.cfl * dx / max_wave_speed(U, gamma)
         dt = min(dt, config.t_final - t)
+        if targets:
+            dt = min(dt, targets[0] - t)
 
         U = integrate(U, dt, make_rhs(dx / dt))
         t += dt
         step += 1
         if record_totals:
             history.append(float(U[0].sum() * dx))
+        if targets and t >= targets[0] - 1e-14:
+            snapshots.append((targets.pop(0), U.copy()))
 
     _check_admissible(U, gamma, t)
-    return Solution(x=x, U=U, t=t, steps=step, config=config, history=history)
+    return Solution(
+        x=x,
+        U=U,
+        t=t,
+        steps=step,
+        config=config,
+        history=history,
+        snapshots=snapshots,
+    )

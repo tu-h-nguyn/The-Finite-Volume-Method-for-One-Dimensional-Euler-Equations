@@ -3,7 +3,15 @@
 import numpy as np
 import pytest
 
-from euler1d import PRESETS, SolverConfig, get_problem, preset, primitive_to_conservative, solve
+from euler1d import (
+    PRESETS,
+    SolverConfig,
+    conservative_to_primitive,
+    get_problem,
+    preset,
+    primitive_to_conservative,
+    solve,
+)
 from euler1d.solver import _apply_boundary
 
 ALL_SCHEMES = sorted(PRESETS)
@@ -135,3 +143,47 @@ def test_step_limit_is_enforced():
     problem = get_problem("sod")
     with pytest.raises(RuntimeError, match="step limit"):
         solve(preset("local_lax_friedrichs", nx=50, max_steps=3), problem.initial_condition)
+
+
+def test_output_times_are_reached_exactly():
+    """Snapshots land on the requested times rather than being interpolated."""
+    problem = get_problem("sod")
+    requested = [0.0, 0.05, 0.12, 0.2]
+    solution = solve(
+        preset("hllc_muscl", nx=100, cfl=0.4), problem.initial_condition,
+        output_times=requested,
+    )
+    assert [t for t, _ in solution.snapshots] == requested
+    for _, state in solution.snapshots:
+        rho, _, p = conservative_to_primitive(state)
+        assert np.all(rho > 0.0) and np.all(p > 0.0)
+
+
+def test_a_single_snapshot_reproduces_a_standalone_run_exactly():
+    """Clamping onto one time gives the same steps as ending the run there."""
+    problem = get_problem("sod")
+    config = preset("hllc_muscl", nx=100, cfl=0.4, t_final=0.2)
+    with_snapshot = solve(config, problem.initial_condition, output_times=[0.1])
+    standalone = solve(
+        preset("hllc_muscl", nx=100, cfl=0.4, t_final=0.1), problem.initial_condition
+    )
+    np.testing.assert_array_equal(with_snapshot.snapshots[0][1], standalone.U)
+
+
+def test_snapshots_are_copies_not_views():
+    """A snapshot must not be rewritten by later time steps."""
+    problem = get_problem("sod")
+    solution = solve(
+        preset("local_lax_friedrichs", nx=50), problem.initial_condition,
+        output_times=[0.0],
+    )
+    initial = problem.initial_condition(solution.x)
+    np.testing.assert_array_equal(solution.snapshots[0][1], initial)
+    assert not np.array_equal(solution.U, initial)
+
+
+def test_output_times_outside_the_run_are_rejected():
+    problem = get_problem("sod")
+    with pytest.raises(ValueError, match="output_times must lie"):
+        solve(preset("local_lax_friedrichs", nx=20, t_final=0.1),
+              problem.initial_condition, output_times=[0.05, 0.5])
