@@ -1,10 +1,16 @@
 name: CI
 
 on:
+  # Pushes to a branch with an open pull request already fire a pull_request
+  # event, so listening to both would run every job twice.
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
