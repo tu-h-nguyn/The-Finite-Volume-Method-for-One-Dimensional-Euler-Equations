@@ -1,0 +1,97 @@
+
+% \section{Tính số lao động luân chuyển giữa các công việc}
+% \subsection{Đặt vấn đề}
+% \begin{itemize}
+%     \item Giả sử, công ty A sản xuất M loại sản phẩm và để tạo ra một loại sản phẩm cần phải tiến hành qua một số công việc nhất định. Ta có thể gọi $j$ là chỉ số công việc và $i$ là chỉ số sản phẩm. Các công việc được sắp xếp theo một 
+% trật tự nhất định, chúng tạo ra một dòng công việc (Job 
+% Flow). Mỗi dòng công việc tạo ra một sản phẩm hoặc một dịch vụ và hiện tại trên mỗi công việc có một lượng lao 
+% động nhất định.
+
+% \item Để tăng tính năng động của người nhân viên, giúp họ chủ động phát triển nghề nghiệp, công ty luôn có kế hoạch luân chuyển nhân viên giữa các công việc khác nhau trong công ty. Việc luân chuyển nhân viên còn giảm bớt sự đơn điệu và nhàm chán trong công việc ở nhân viên. Vì 
+% vậy, ban giám đốc công ty chủ động đưa ra một số năm làm việc bình quân ở mỗi công việc $(T_j)$ tính bằng năm.
+% \end{itemize}
+% \subsection{Thiết lập các ma trận}
+% \begin{itemize}
+%     \item Nếu liệt kê tất cả các công việc khác nhau trên từng dòng 
+% công việc ta có một ma trận về thời gian làm việc:
+% \begin{align}
+%     \textbf{T} = [T_{ij}]_{M,N} = \begin{bmatrix}
+%     T_{11}&T_{12}&\dotsb&T_{1N}\\
+%     T_{21}&T_{22}&\dotsb&T_{2N}\\
+%     \vdots&\vdots&\ddots&\vdots\\
+%     T_{M1}&T_{M2}&\dotsb&T_{MN}\\
+%     \end{bmatrix}
+% \end{align}
+%     \item Nếu tính tỷ lệ $\dfrac{1}{T_{ij}}= \mu_{ij}$ ta sẽ có tỷ lệ công nhân rời khỏi công việc hàng năm. Tập hợp các tỷ lệ này theo từng công việc và theo từng sản phẩm ta có ma trận di chuyển khỏi công việc. Ví dụ, một công việc may thân áo trong nhà máy may có thời gian làm việc bình quân là 4 năm, như vậy bình quân một năm có tỷ lệ di chuyển khỏi công việc may thân áo là $25\% \cdot \mu_{i.than.ao} = \frac{1}{4} =25\%$. 
+% \item Công nhân di chuyển khỏi công việc hiện tại đến các 
+% công việc khác cùng dòng (Job flow) và ra bên ngoài dòng công việc viết tắt (out). Mức độ di chuyển này phụ thuộc vào sự tương đồng giữa các công việc và định hướng sử dụng lao động của doanh nghiệp. Khi thời gian làm việc ở mỗi công việc trên dòng công việc càng ngắn 
+% thì sự dịch chuyển lao động vào công việc này sẽ càng tăng lên. Dựa trên đặc trưng này ta có thể tính được xác 
+% suất chuyển đổi công việc trong công ty. \textbf{Ma trận này có dạng:}
+% \begin{align}
+%     \textbf{P} = [P_{ij}]_{M,N} = \begin{bmatrix}
+%     P_{11}&P_{12}&\dotsb&P_{1N}\\
+%     P_{21}&P_{22}&\dotsb&P_{2N}\\
+%     \vdots&\vdots&\ddots&\vdots\\
+%     P_{M1}&P_{M2}&\dotsb&P_{MN}\\
+%     \end{bmatrix}
+% \end{align}
+% \item Nếu ta lấy xác suất luân chuyển công việc trên một dòng công việc, thì ta có 1 ma trận vuông với số lượng phần tử là $N\times N$, ma trân này có dạng như sau:
+% \begin{align}
+%     \textbf{P} = [P_{ij}]_{N,N} = \begin{bmatrix}
+%     P_{11}&P_{12}&\dotsb&P_{1N}\\
+%     P_{21}&P_{22}&\dotsb&P_{2N}\\
+%     \vdots&\vdots&\ddots&\vdots\\
+%     P_{N1}&P_{N2}&\dotsb&P_{NN}\\
+%     \end{bmatrix}
+% \end{align}
+% \item Và nếu ta có $L$ là vector biểu diễn số lượng lao động ở các công việc trên một dòng công việc như sau: 
+% \begin{align}
+% \textbf{L} = [L_i]_N = \begin{bmatrix}
+%     L_1\\
+%     L_2\\
+%     \vdots\\
+%     L_N
+% \end{bmatrix} 
+% \end{align}
+% \item Xét một Ma trận vuông với các phần tử trên đường chéo chính là vector $L$, còn các phần tử khác có giá trị bằng $0$. Ma trận này thể hiện phân bố lực lượng lao động hiện tại của doanh nghiệp trên một dòng công việc. \textbf{Ma trận này có dạng như sau}:
+% \begin{align}
+%     \textbf{L}_\textbf{0} = [L^{0}_{ij}]_{N,N} = \begin{bmatrix}
+%     L_{11}&0& \dotsb &0\\
+%     0&L_{22}& \dotsb &0\\
+%     \vdots & \vdots & \ddots & \vdots\\
+%     0&0&\dotsb & L_{NN}
+%     \end{bmatrix}
+% \end{align}
+% \subsection{Tính toán phân bố lực lượng lao động tại một thời điểm}
+% \item Nếu ta lấy tích của ma trận Lao động với Ma trận xác suất luân chuyển công việc ta nhận được một ma trận mới thể hiện phân bổ lực lượng lao động ở từng công việc sau 1 năm. \textbf{Tích của hai ma trận này có dạng:}
+% \begin{align}
+%     [L^{1}_{ij}]_{N,N} = \begin{bmatrix}
+%     L_{11}&0& \dotsb &0\\
+%     0&L_{22}& \dotsb &0\\
+%     \vdots & \vdots & \ddots & \vdots\\
+%     0&0&\dotsb & L_{NN}
+%     \end{bmatrix} \times \begin{bmatrix}
+%     P_{11}&P_{12}&\dotsb&P_{1N}\\
+%     P_{21}&P_{22}&\dotsb&P_{2N}\\
+%     \vdots&\vdots&\ddots&\vdots\\
+%     P_{N1}&P_{N2}&\dotsb&P_{NN}\\
+%     \end{bmatrix}
+% \end{align}
+% \item Tổng quát hơn, xét đến năm thứ $t$ bất kỳ. Nếu không có các yếu tố bất ngờ như dịch bệnh, công ty thua lỗ cần cơ cấu lại nhân lực,... thì ta có thể dự đoán tình trạng phân bố lao động của năm đó sẽ có dạng:
+% \begin{align}
+%     [L^{t}_{ij}]_{N,N} = \begin{bmatrix}
+%     L_{11}&0& \dotsb &0\\
+%     0&L_{22}& \dotsb &0\\
+%     \vdots & \vdots & \ddots & \vdots\\
+%     0&0&\dotsb & L_{NN}
+%     \end{bmatrix} \times \begin{bmatrix}
+%     P_{11}&P_{12}&\dotsb&P_{1N}\\
+%     P_{21}&P_{22}&\dotsb&P_{2N}\\
+%     \vdots&\vdots&\ddots&\vdots\\
+%     P_{N1}&P_{N2}&\dotsb&P_{NN}\\
+%     \end{bmatrix}^t
+% \end{align}
+% \item Nếu ta tính tổng số lao động theo từng cột ở ma trận \textbf{($3.4$)} ta sẽ có lượng cung lao động theo từng công việc.
+% $$L_j = \displaystyle{\sum_{i=1}^{M} {L_{ij}}}$$
+% \item Với các thông tin trên nhà quản trị nhân lực sẽ tính được số nhân viên luân chuyển từ bộ phận này sang bộ phận khác. Từ đó tính được nhu cầu lao động cần bổ sung trong các năm sắp tới.
+% \end{itemize}

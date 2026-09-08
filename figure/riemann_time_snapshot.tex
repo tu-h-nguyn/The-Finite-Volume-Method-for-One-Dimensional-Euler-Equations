@@ -1,0 +1,65 @@
+\begin{tikzpicture}[scale=1.5]
+    % --- HỆ TRỤC TỌA ĐỘ ---
+    \draw[->] (-3,0) -- (3,0) node[right] {$x$};
+    \draw[->] (0,0) -- (0,3.2) node[above] {$t$};
+    \node[below] at (0,0) {$x_0$};
+    
+    % --- ĐƯỜNG THỜI GIAN t = 0.2 (Đặt tên là 'timeline') ---
+    \draw[thick, red, name path=timeline] (-2.8, 2) -- (2.8, 2) node[right] {$t = 0.2$};
+    
+    % --- CÁC SÓNG (Vừa vẽ vừa đặt tên path) ---
+    
+    % 1. Head (Sóng giãn biên trái)
+    \draw[name path=head] (0,0) -- (-1.6,2.5);
+    
+    % 2. Tail (Sóng giãn biên phải)
+    \draw[name path=tail] (0,0) -- (-0.8,2.5);
+    
+    % Các đường chấm biểu diễn bên trong vùng Rarefaction
+    \foreach \i in {-1.4, -1.2, -1.0}
+        \draw[dotted] (0,0) -- (\i, 2.5);
+        
+    % 3. Contact (Gián đoạn tiếp xúc - Nét đứt)
+    \draw[dashed, thick, name path=contact] (0,0) -- (0.4,2.5);
+    
+    % 4. Shock (Sóng xung kích - Nét liền đậm)
+    \draw[thick, name path=shock] (0,0) -- (1.6,2.5);
+    
+    % --- TÌM GIAO ĐIỂM TỰ ĐỘNG ---
+    % TikZ sẽ tự tính toán vị trí cắt nhau giữa 'timeline' và các đường sóng
+    \path [name intersections={of=timeline and head, by=P_head}];
+    \path [name intersections={of=timeline and tail, by=P_tail}];
+    \path [name intersections={of=timeline and contact, by=P_contact}];
+    \path [name intersections={of=timeline and shock, by=P_shock}];
+
+    % --- VẼ CÁC CHẤM ĐEN TẠI GIAO ĐIỂM ---
+    \node[circle, fill, inner sep=1.5pt] at (P_head) {};
+    \node[circle, fill, inner sep=1.5pt] at (P_tail) {};
+    \node[circle, fill, inner sep=1.5pt] at (P_contact) {};
+    \node[circle, fill, inner sep=1.5pt] at (P_shock) {};
+    
+    % --- NHÃN VÀ MŨI TÊN (Giữ nguyên bố cục so le để không bị đè) ---
+    
+    % Head: Kéo sang trái
+    \draw[<-] (P_head) -- +(-0.6, 0.6) node[above left] {Head};
+    
+    % Tail: Kéo lên cao hẳn (0.9) để né Contact
+    \draw[<-] (P_tail) -- +(-0.15, 0.9) node[above] {Tail};
+    
+    % Contact: Kéo lên cao hẳn (0.9) và nghiêng phải
+    \draw[<-] (P_contact) -- +(0.4, 0.9) node[above] {Contact};
+    
+    % Shock: Kéo sang phải
+    \draw[<-] (P_shock) -- +(0.6, 0.6) node[above right] {Shock};
+    
+    % --- VÙNG MIỀN ---
+    \node at (-2, 1.2) {$L$};
+    \node at (-0.5, 1.2) {$L^*$};
+    \node at (0.6, 1.2) {$R^*$};
+    \node at (2, 1.2) {$R$};
+    
+    % --- NHÃN RAREFACTION ---
+    \draw[->] (-1.5, 0.6) to[bend left] (-0.8, 0.6);
+    \node[below] at (-1.2, 0.6) {\small Rarefaction};
+
+\end{tikzpicture}

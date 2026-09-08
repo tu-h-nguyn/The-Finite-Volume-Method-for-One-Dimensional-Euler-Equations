@@ -1,0 +1,28 @@
+
+\section{So sánh nghiệm xấp xỉ và nghiệm chính xác}
+
+Tổng hợp kết quả từ các phần trước, ta có thể vẽ được đồ thị so sánh như sau:
+
+\input{figure/methods_comparison_fig}
+
+(Phần code Matlab để so sánh được đính kèm ở thư mục ./matlab/compare\_all\_methods.m)
+
+Dựa trên đồ thị nghiệm và đặc tính của các phương pháp số, ta có các nhận xét về phân bố sai số của bài toán Sod Shock Tube như sau:
+
+\textbf{Vị trí tập trung sai số}
+
+Đồ thị sai số không phân bố đều mà tập trung tại các vùng thay đổi mạnh của trường dòng chảy:
+\begin{itemize}
+    \item Sóng xung kích (Shock Wave) tại $x \approx 0.85$: Đây là nơi sai số đạt giá trị cực đại ($L_\infty$). Do lưới tính toán hữu hạn không thể mô tả hoàn hảo một bước nhảy thẳng đứng, nghiệm số luôn có xu hướng bị trượt (smearing) tại vị trí này.
+    \item Gián đoạn tiếp xúc (Contact Discontinuity) tại $x \approx 0.5$: Tại đây xuất hiện một đỉnh sai số thứ hai, thường thấp hơn và rộng hơn so với tại vị trí shock.
+    \item Vùng sóng giãn (Rarefaction Wave): Sai số thấp và phân bố trải dài, phản ánh khả năng mô tả tốt các biến đổi trơn của thuật toán.
+\end{itemize}
+
+\textbf{So sánh các phương pháp số}
+\begin{itemize}
+    \item Phương pháp Lax-Friedrichs (Cấp 1):
+    Do độ nhớt nhân tạo (numerical viscosity) lớn, phương pháp này gây ra hiện tượng tán xạ (dissipation) mạnh. Sai số $L_1$ lớn do biên dạng nghiệm bị làm trơn quá mức (excessive smearing) tại các vị trí gián đoạn.
+    
+    \item Các phương pháp độ phân giải cao (2nd Order):
+    Sử dụng bộ hạn chế từ thông (flux limiters), các phương pháp này giảm thiểu đáng kể sai số tán xạ, cho biên dạng sóng sắc nét hơn (sharper resolution). Sai số $L_1$ nhỏ hơn đáng kể so với phương pháp cấp 1. Việc không xuất hiện các dao động giả (oscillations) gần vùng shock cho thấy tính ổn định TVD (Total Variation Diminishing) được đảm bảo.
+\end{itemize}

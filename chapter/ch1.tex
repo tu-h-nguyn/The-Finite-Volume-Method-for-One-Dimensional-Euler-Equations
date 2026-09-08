@@ -1,0 +1,113 @@
+\section{Cơ sở Vật lý của Động lực học chất khí}
+\subsection{Bản chất của Áp suất và Động lượng}
+
+Áp suất không phải là một lực vĩ mô tác dụng từ bên ngoài, mà là kết quả trung bình của chuyển động hỗn loạn của các phân tử khí. Ngay cả khi vận tốc vĩ mô $u = 0$, các phân tử vẫn va chạm và truyền động lượng, tạo nên một thông lượng động lượng vi mô. Do đó, trong phương trình động lượng, áp suất xuất hiện như một phần của thông lượng:
+
+\begin{equation*}
+    \text{Flux}_{\text{momentum}} = \rho u^2 + p
+\end{equation*}
+
+dẫn đến định luật bảo toàn dạng tích phân
+\begin{equation*}
+\frac{d}{dt} \int_{x_1}^{x_2} \rho(x,t)u(x,t)\,dx
+= -[\rho u^2 + p]_{x_1}^{x_2}.
+\end{equation*}
+
+Dạng vi phân của phương trình động lượng là
+\begin{equation*}
+(\rho u)_t + (\rho u^2 + p)_x = 0.
+\end{equation*}
+
+Cách nhìn này giải thích vì sao chênh lệch áp suất có thể tạo ra gia tốc vĩ mô của dòng khí mà không cần gia tốc từng phân tử riêng lẻ.
+
+\subsection{Năng lượng và Phương trình trạng thái}
+
+Tổng năng lượng $E$ thường được phân tích thành
+\begin{equation*}
+E = \rho e + \frac12 \rho u^2,
+\end{equation*}
+trong đó $\frac12\rho u^2$ là động năng và $\rho e$ là nội năng. Đại lượng $e$ là nội năng riêng (trên một đơn vị khối lượng).
+
+Trong các phương trình Euler, ta giả thiết rằng khí ở trạng thái cân bằng nhiệt động và hóa học cục bộ, và nội năng là một hàm đã biết của áp suất và mật độ:
+\begin{equation*}
+e = e(p,\rho).
+\end{equation*}
+
+Ngoài thông lượng đối lưu $Eu$, áp suất $p$ còn tạo ra một thông lượng động năng vi mô bằng $pu$. Khi không có lực ngoài, phương trình bảo toàn năng lượng có dạng
+\begin{equation*}
+E_t + [(E+p)u]_x = 0.
+\end{equation*}
+
+Đối với khí lý tưởng đa nguyên (Polytropic Ideal Gas), nội năng phụ thuộc tuyến tính vào nhiệt độ.
+\begin{equation*}
+p = R\rho T,
+\end{equation*}
+\begin{equation*}
+e = c_v T.
+\end{equation*}
+
+Từ đó suy ra
+\begin{equation*}
+e = \frac{p}{(\gamma - 1)\rho},
+\end{equation*}
+và phương trình trạng thái:
+\begin{equation*}
+E = \frac{p}{\gamma - 1} + \frac12 \rho u^2.
+\end{equation*}
+
+Trong đó $\gamma = 1.4$ là tỷ số nhiệt dung đối với không khí.
+
+\subsection{Entropy}
+Entropy là đại lượng then chốt để phân biệt nghiệm vật lý và phi vật lý. Entropy riêng $s$ được định nghĩa là $s = c_v \ln(p/\rho^\gamma) + \text{const}$. Trong các vùng trơn (không có shock), entropy được bảo toàn dọc theo đường dòng:
+\begin{equation*}
+    s_t + u s_x = 0
+\end{equation*}
+Tuy nhiên, khi một phần tử khí đi qua shock, entropy phải tăng. Điều này phản ánh các quá trình nhớt và va chạm vi mô trong shock thực. Do đó, entropy cung cấp tiêu chuẩn vật lý để loại bỏ các nghiệm yếu không phù hợp dù chúng thỏa mãn các định luật bảo toàn.
+
+\subsection{Dòng đẳng entropy}
+Trong dòng khí không xuất hiện shock và các quá trình không thuận nghịch, entropy của từng phần tử khí được bảo toàn. Khi đó, cần tìm cách đơn giản hóa hệ Euler bằng cách khai thác điều kiện entropy không đổi.
+
+
+Giả thiết dòng đẳng entropy tương đương với điều kiện
+\[
+s = \text{const}.
+\]
+Khi đó, áp suất chỉ phụ thuộc vào mật độ và thỏa mãn quan hệ
+\[
+dp = c^2\, d\rho,
+\]
+trong đó $c$ là tốc độ âm thanh. Với khí lý tưởng đa biến, ta có
+\[
+c^2 = \gamma \frac{p}{\rho}.
+\]
+Hệ Euler khi đó có thể được rút gọn thành hệ hai phương trình bảo toàn khối lượng và động lượng:
+\[
+\begin{pmatrix}
+\rho \\
+\rho u
+\end{pmatrix}_t
++
+\begin{pmatrix}
+\rho u \\
+\rho u^2 + \kappa \rho^\gamma
+\end{pmatrix}_x
+= 0.
+\]
+
+Dòng đẳng entropy mô tả tốt các miền dòng trơn và sóng âm biên độ nhỏ. Tuy nhiên, mô hình này không còn hợp lệ khi xuất hiện shock, do entropy luôn tăng qua shock.
+
+\subsection{Dòng đẳng nhiệt}
+
+Trong một số bài toán, quá trình trao đổi nhiệt diễn ra đủ nhanh để nhiệt độ của khí được giữ không đổi. Khi đó, phương trình năng lượng của hệ Euler không còn cần thiết.
+
+Giả thiết nhiệt độ không đổi dẫn đến phương trình trạng thái
+\[
+p = \rho RT,
+\]
+trong đó $R$ là hằng số khí và $T$ là nhiệt độ không đổi. Khi đó,
+\[
+\frac{dp}{d\rho} = c^2,
+\]
+với $c$ là tốc độ âm thanh không đổi. Hệ phương trình mô tả dòng đẳng nhiệt gồm hai phương trình bảo toàn khối lượng và động lượng.
+
+Trong dòng đẳng nhiệt, năng lượng không được bảo toàn do có trao đổi nhiệt với môi trường. Mô hình này thích hợp cho các bài toán dòng loãng và khí quyển, nhưng không mô tả chính xác shock mạnh.

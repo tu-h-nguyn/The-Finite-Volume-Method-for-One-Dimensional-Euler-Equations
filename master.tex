@@ -1,0 +1,40 @@
+\input{preamble}
+
+\renewcommand{\P}{\mathbb{P}}
+\graphicspath{ {figure/} }
+\setcounter{MaxMatrixCols}{20}
+\begin{document}
+
+\pagestyle{empty}
+\include{front-page}
+
+\newpage
+
+\pagestyle{plain}
+\pagenumbering{arabic}
+\include{utils/acknowledgement}
+\include{utils/abstraction}
+
+% set up
+
+\tableofcontents
+\listoffigures
+\clearpage
+
+% \include{utils/glossary}
+
+% chapter
+\pagenumbering{arabic}
+\setcounter{page}{1}
+% \include{chapter/buff}
+\include{chapter/ch1}
+% \include{chapter/ch2}
+\include{chapter/ch3}
+\include{chapter/ch4}
+\include{chapter/ch5}
+
+\include{utils/summary}
+
+\include{utils/reference}
+
+\end{document}

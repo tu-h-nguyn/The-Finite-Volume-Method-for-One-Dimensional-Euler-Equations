@@ -1,0 +1,10 @@
+\babel@toc {vietnamese}{}\relax 
+\contentsline {figure}{\numberline {1}{\ignorespaces Sơ đồ bài toán ống sốc Sod}}{3}{figure.caption.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Cấu trúc nghiệm bài toán Riemann trong mặt phẳng $x-t$ với $p_L > p_R$}}{4}{figure.caption.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Minh họa quá trình cập nhật vị trí các sóng từ $t^n$ lên $t^{n+1}$}}{7}{figure.caption.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Kết quả nghiệm chính xác bài toán Riemann tại t = 0.2}}{8}{figure.caption.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Rời rạc hóa miền tính toán $\Omega $ thành các miền con}}{9}{figure.caption.6}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Kết quả phương pháp Lax-Friedrichs tại t = 0.2}}{12}{figure.caption.7}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Kết quả phương pháp bậc 2 không gian tại t = 0.2}}{15}{figure.caption.8}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Kết quả phương pháp bậc 2 thời gian tại t = 0.2, kết hợp công thức minmod}}{17}{figure.caption.9}%
+\contentsline {figure}{\numberline {9}{\ignorespaces So sánh các phương pháp số với nghiệm chính xác tại t = 0.2}}{18}{figure.caption.10}%

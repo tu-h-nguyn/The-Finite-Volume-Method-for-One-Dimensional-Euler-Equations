@@ -1,0 +1,31 @@
+\begin{tikzpicture}[scale=1.5]
+    % Draw axes
+    \draw[->] (-3,0) -- (3,0) node[right] {$x$};
+    \draw[->] (0,0) -- (0,3) node[above] {$t$};
+    
+    % Origin label
+    \node[below] at (0,0) {$x_0$};
+    
+    % Rarefaction Fan (Left)
+    \draw (0,0) -- (-2,2.5) node[above] {Head};
+    \draw (0,0) -- (-1,2.5) node[above] {Tail};
+    \foreach \i in {-1.8, -1.6, ..., -1.2}
+        \draw[dotted] (0,0) -- (\i, 2.5);
+        
+    % Contact Discontinuity (Middle)
+    \draw[dashed, thick] (0,0) -- (0.5,2.5) node[above] {Contact};
+    
+    % Shock Wave (Right)
+    \draw[thick] (0,0) -- (2,2.5) node[above] {Shock};
+    
+    % Labels for regions
+    \node at (-2.5, 1) {$L$};
+    \node at (-0.5, 1.8) {$L^*$};
+    \node at (1, 1.5) {$R^*$};
+    \node at (2.5, 1) {$R$};
+    
+    % Arrow indicating expansion fan
+    \draw[->] (-1.9, 1.2) to[bend left] (-1.1, 1.2);
+    \node[below] at (-1.5, 1.2) {Rarefaction};
+
+\end{tikzpicture}

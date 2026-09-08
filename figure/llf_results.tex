@@ -1,0 +1,22 @@
+\begin{tikzpicture}
+    % Define spacing and dimensions
+    \def\plotwidth{7cm}
+    \def\plotheight{5.5cm}
+    \def\hspace{8cm}
+    \def\vspace{6.5cm}
+    
+    % Top row
+    \node[anchor=south west, fill=white] at (0,\vspace) {
+        \resizebox{\plotwidth}{\plotheight}{\input{figure/density_llf}}
+    };
+    
+    \node[anchor=south west, fill=white] at (\hspace,\vspace) {
+        \resizebox{\plotwidth}{\plotheight}{\input{figure/velocity_llf}}
+    };
+    
+    % Bottom row
+    \node[anchor=south west, fill=white] at (0,0) {
+        \resizebox{\plotwidth}{\plotheight}{\input{figure/pressure_llf}}
+    };
+    
+\end{tikzpicture}

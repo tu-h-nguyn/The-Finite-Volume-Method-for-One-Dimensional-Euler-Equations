@@ -1,0 +1,333 @@
+\documentclass[aspectratio=169,22pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Thiết lập đường dẫn cho hình ảnh
+\makeatletter
+\def\input@path{{../}{../figure/}}
+\renewenvironment{figure}[1][]{}{}
+\renewcommand{\caption}[1]{}
+\renewcommand{\label}[1]{}
+\makeatother
+\graphicspath{{../figure/}{../}}
+
+% Theme và màu sắc
+\usetheme{default}
+\usecolortheme{default}
+
+% Font và kích thước
+\usefonttheme{professionalfonts}
+\setbeamerfont{title}{size=\huge,series=\bfseries}
+\setbeamerfont{subtitle}{size=\Large}
+\setbeamerfont{frametitle}{size=\LARGE,series=\bfseries}
+\setbeamerfont{normal text}{size=\large}
+\setbeamerfont{itemize/enumerate body}{size=\large}
+
+% Màu sắc với độ tương phản cao
+\definecolor{darkblue}{RGB}{0,51,102}
+\definecolor{lightgray}{RGB}{245,245,245}
+\setbeamercolor{title}{fg=darkblue}
+\setbeamercolor{frametitle}{fg=darkblue}
+\setbeamercolor{structure}{fg=darkblue}
+
+% Loại bỏ navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Footer đơn giản
+\setbeamertemplate{footline}{
+\leavevmode%
+\hbox{%
+\begin{beamercolorbox}[wd=.8\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+\usebeamerfont{author in head/foot}\hspace{2ex}Phương pháp thể tích hữu hạn cho phương trình Euler
+\end{beamercolorbox}%
+\begin{beamercolorbox}[wd=.2\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+\usebeamerfont{date in head/foot}\insertframenumber{} / \inserttotalframenumber\hspace{2ex}
+\end{beamercolorbox}}%
+\vskip0pt%
+}
+
+% Thiết lập lề an toàn
+\setbeamersize{text margin left=0.05\paperwidth}
+\setbeamersize{text margin right=0.05\paperwidth}
+
+\title{Phương pháp thể tích hữu hạn\\cho phương trình Euler}
+\subtitle{Nghiên cứu và ứng dụng trong bài toán sóng xung kích}
+\author{Nông Thanh Toàn, Nguyễn Hoàng Tú,\\Lê Minh Tuấn Kiệt, Đặng Kim Bảng}
+\institute{Trường Đại học Khoa học Tự nhiên - ĐHQG TP.HCM}
+\date{2025}
+
+\begin{document}
+
+% Slide mở đầu
+\begin{frame}
+\titlepage
+\end{frame}
+
+% Mục lục
+\begin{frame}{Nội dung trình bày}
+\begin{enumerate}
+\item Cơ sở vật lý động lực học khí
+\item Bài toán Riemann và nghiệm chính xác
+\item Phương pháp thể tích hữu hạn
+\item So sánh kết quả và đánh giá
+\item Kết luận và hướng phát triển
+\end{enumerate}
+\end{frame}
+
+% Section 1
+\section{Cơ sở vật lý}
+
+\begin{frame}{Hệ phương trình Euler 1D}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\textbf{Định luật bảo toàn:}
+\begin{align}
+\frac{\partial \rho}{\partial t} + \frac{\partial (\rho u)}{\partial x} &= 0\\
+\frac{\partial (\rho u)}{\partial t} + \frac{\partial (\rho u^2 + p)}{\partial x} &= 0\\
+\frac{\partial E}{\partial t} + \frac{\partial (u(E + p))}{\partial x} &= 0
+\end{align}
+\end{column}
+\begin{column}{0.4\textwidth}
+\textbf{Phương trình trạng thái:}
+$$E = \frac{p}{\gamma - 1} + \frac{1}{2}\rho u^2$$
+với $\gamma = 1.4$
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Bản chất vật lý của áp suất}
+\begin{itemize}
+\item Áp suất = kết quả trung bình chuyển động phân tử
+\item Thông lượng động lượng: $\rho u^2 + p$
+\item Entropy tăng qua shock: $s_t + u s_x = 0$
+\end{itemize}
+
+\vspace{1cm}
+\textbf{Vai trò entropy:} Loại bỏ nghiệm phi vật lý
+\end{frame}
+
+% Section 2
+\section{Bài toán Riemann}
+
+\begin{frame}{Bài toán ống sốc Sod}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\textbf{Điều kiện đầu:}
+\begin{align}
+\rho_L &= 1.0, \quad \rho_R = 0.125\\
+p_L &= 1.0, \quad p_R = 0.1\\
+u_L &= u_R = 0
+\end{align}
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[width=\textwidth]{tube.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Cấu trúc nghiệm Riemann}
+\begin{center}
+\begin{tikzpicture}[scale=1.2]
+% Axes
+\draw[->] (0,0) -- (6,0) node[right] {$x$};
+\draw[->] (0,0) -- (0,4) node[above] {$t$};
+
+% Wave lines
+\draw[thick, blue] (1,0.5) -- (2,3.5); % Rarefaction head
+\draw[thick, blue] (2,0.5) -- (2.8,3.5); % Rarefaction tail
+\draw[thick, red] (3,0.5) -- (3,3.5); % Contact
+\draw[thick, green] (3.5,0.5) -- (4.5,3.5); % Shock
+
+% Regions
+\node[font=\Large] at (0.5,2) {L};
+\node[font=\Large] at (2.4,2) {L*};
+\node[font=\Large] at (3.2,2) {R*};
+\node[font=\Large] at (5,2) {R};
+
+% Labels
+\node[blue] at (1.5,3.8) {Sóng giãn};
+\node[red] at (3,3.8) {Tiếp xúc};
+\node[green] at (4,3.8) {Shock};
+\end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}{Thuật toán nghiệm chính xác}
+\textbf{Bước 1:} Thiết lập phương trình áp suất $p^*$
+$$f(p) = u_L^*(p) - u_R^*(p) = 0$$
+
+\textbf{Bước 2:} Newton-Raphson
+$$p_{k+1} = p_k - \frac{f(p_k)}{f'(p_k)}$$
+
+\textbf{Bước 3:} Tính biến trạng thái vùng sao
+
+\textbf{Bước 4:} Xác định nghiệm tại $(x,t)$
+\end{frame}
+
+\begin{frame}{Kết quả nghiệm chính xác}
+\begin{center}
+\scalebox{0.9}{\input{../figure/riemann_results}}
+\end{center}
+\end{frame}
+
+% Section 3
+\section{Phương pháp thể tích hữu hạn}
+
+\begin{frame}{Nguyên lý cơ bản}
+\textbf{Dạng tổng quát:}
+$$\frac{\partial \mathbf{w}}{\partial t} + \frac{\partial \mathbf{f}(\mathbf{w})}{\partial x} = 0$$
+
+\textbf{Công thức cập nhật:}
+$$\mathbf{W}_i^{n+1} = \mathbf{W}_i^n - \frac{\Delta t}{\Delta x} \left( \mathbf{F}_{i+1/2} - \mathbf{F}_{i-1/2} \right)$$
+
+\textbf{Khác biệt:} Cách chọn thông lượng số $\mathbf{F}_{i+1/2}$
+\end{frame}
+
+\begin{frame}{Phương pháp Lax-Friedrichs}
+$$\mathbf{W}_i^{n+1} = \frac{\mathbf{W}_{i-1}^n + \mathbf{W}_{i+1}^n}{2} - \frac{\Delta t}{2\Delta x} \left( \mathbf{f}(\mathbf{W}_{i+1}^n) - \mathbf{f}(\mathbf{W}_{i-1}^n) \right)$$
+
+\vspace{1cm}
+\textbf{Đặc điểm:}
+\begin{itemize}
+\item Đơn giản, ổn định
+\item Độ chính xác bậc 1
+\item Khuếch tán cao
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Kết quả Lax-Friedrichs}
+\begin{center}
+\scalebox{0.9}{\input{../figure/lf_results}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Local Lax-Friedrichs}
+$$\mathbf{F}_{i+1/2}^{LLF} = \frac{1}{2} \left( \mathbf{f}(\mathbf{W}_i) + \mathbf{f}(\mathbf{W}_{i+1}) \right) - \frac{\alpha_{i+1/2}}{2} \left( \mathbf{W}_{i+1} - \mathbf{W}_i \right)$$
+
+$$\alpha_{i+1/2} = \max \left( |u_i| + c_i, |u_{i+1}| + c_{i+1} \right)$$
+
+\vspace{0.5cm}
+\textbf{Cải tiến:} Sử dụng thông tin cục bộ
+\end{frame}
+
+\begin{frame}{Kết quả Local Lax-Friedrichs}
+\begin{center}
+\scalebox{0.9}{\input{../figure/llf_results}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Phương pháp bậc 2 không gian}
+\textbf{Tái cấu trúc tuyến tính từng đoạn:}
+$$\mathbf{W}_{i+1/2}^- = \mathbf{W}_i + \mathbf{W}_i' \frac{\Delta x}{2}$$
+
+\textbf{Hàm minmod:}
+$$\mathbf{W}'_i = \frac{1}{\Delta x}\text{minmod}(\mathbf{W}_i - \mathbf{W}_{i-1}, \mathbf{W}_{i+1} - \mathbf{W}_i)$$
+
+\textbf{Ưu điểm:} Độ chính xác bậc 2, TVD
+\end{frame}
+
+\begin{frame}{Kết quả bậc 2 không gian}
+\begin{center}
+\scalebox{0.9}{\input{../figure/spatial2_results}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Phương pháp Heun (bậc 2 thời gian)}
+\textbf{Biến đổi về ODE:}
+$$\frac{d\mathbf{W}}{dt} = \mathcal{F}(\mathbf{W})$$
+
+\textbf{Công thức Heun:}
+$$\mathbf{W}^{n+1} = \mathbf{W}^n + \frac{\Delta t}{2} \left[ \mathcal{F}(\mathbf{W}^n) + \mathcal{F}(\mathbf{W}^n + \Delta t \mathcal{F}(\mathbf{W}^n)) \right]$$
+
+\textbf{Ưu điểm:} Giảm sai số tích lũy theo thời gian
+\end{frame}
+
+\begin{frame}{Kết quả bậc 2 thời gian}
+\begin{center}
+\scalebox{0.9}{\input{../figure/temporal2_results}}
+\end{center}
+\end{frame}
+
+% Section 4
+\section{So sánh kết quả}
+
+\begin{frame}{So sánh tổng quan}
+\begin{center}
+\scalebox{1.0}{\input{../figure/methods_comparison_fig}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Đánh giá phương pháp}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+\begin{table}
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Phương pháp} & \textbf{Độ chính xác} & \textbf{Chi phí} \\
+\hline
+Lax-Friedrichs & Thấp & Thấp \\
+\hline
+Local LF & Trung bình & Trung bình \\
+\hline
+Bậc 2 không gian & Cao & Cao \\
+\hline
+Bậc 2 thời gian & Cao & Cao \\
+\hline
+\end{tabular}
+\end{table}
+\end{column}
+\begin{column}{0.4\textwidth}
+\textbf{Vị trí sai số lớn:}
+\begin{itemize}
+\item Sóng xung kích
+\item Gián đoạn tiếp xúc
+\item Vùng sóng giãn (thấp)
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+% Section 5
+\section{Kết luận}
+
+\begin{frame}{Kết quả đạt được}
+\begin{itemize}
+\item Xây dựng cơ sở lý thuyết vững chắc
+\item Phát triển các phương pháp số hiệu quả
+\item Kiểm nghiệm với bài toán Sod cổ điển
+\end{itemize}
+
+\vspace{1cm}
+\textbf{Đóng góp chính:} So sánh chi tiết các phương pháp thể tích hữu hạn
+\end{frame}
+
+\begin{frame}{Hướng phát triển}
+\begin{itemize}
+\item Phương pháp bậc cao hơn (WENO, DG)
+\item Mở rộng đa chiều (2D, 3D)
+\item Thích ứng lưới (AMR)
+\item Ứng dụng thực tế
+\end{itemize}
+\end{frame}
+
+% Slide Q&A
+\begin{frame}
+\begin{center}
+\Huge Cảm ơn!
+
+\vspace{2cm}
+
+\Large Câu hỏi và thảo luận
+\end{center}
+\end{frame}
+
+\end{document}

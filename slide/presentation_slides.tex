@@ -1,0 +1,537 @@
+\documentclass[aspectratio=43,10pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{intersections,calc,positioning}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Thiết lập đường dẫn cho hình ảnh
+\makeatletter
+\def\input@path{{../}{../figure/}}
+% Vô hiệu hóa figure environment cho beamer
+\renewenvironment{figure}[1][]{}{}
+% Vô hiệu hóa caption cho beamer
+\renewcommand{\caption}[1]{}
+\renewcommand{\label}[1]{}
+\makeatother
+\graphicspath{{../figure/}{../}}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% Giảm kích thước font cho slide
+\setbeamerfont{frametitle}{size=\normalsize}
+\setbeamerfont{title}{size=\large}
+\setbeamerfont{subtitle}{size=\small}
+\setbeamerfont{normal text}{size=\small}
+
+% Sửa footer ngắn gọn
+\setbeamertemplate{footline}{
+\leavevmode%
+\hbox{%
+\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+\usebeamerfont{author in head/foot}Chuyên đề giải tích số
+\end{beamercolorbox}%
+\begin{beamercolorbox}[wd=.5\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+\usebeamerfont{date in head/foot}\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+\end{beamercolorbox}}%
+\vskip0pt%
+}
+
+\title{Phương pháp thể tích hữu hạn cho phương trình Euler}
+\subtitle{Nghiên cứu và ứng dụng trong bài toán sóng xung kích}
+\author{Nông Thanh Toàn, Nguyễn Hoàng Tú, Lê Minh Tuấn Kiệt, Đặng Kim Bảng}
+\institute{Trường Đại học Khoa học Tự nhiên - ĐHQG TP.HCM}
+\date{Thành phố Hồ Chí Minh, 2025}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}{Nội dung trình bày}
+\tableofcontents[hideallsubsections]
+\end{frame}
+
+\section{Giới thiệu}
+
+\begin{frame}{Bài toán nghiên cứu}
+\begin{itemize}
+    \item \textbf{Hệ phương trình Euler 1D:}
+    \begin{align}
+        \frac{\partial \rho}{\partial t} + \frac{\partial (\rho u)}{\partial x} &= 0 \\
+        \frac{\partial (\rho u)}{\partial t} + \frac{\partial (\rho u^2 + p)}{\partial x} &= 0 \\
+        \frac{\partial E}{\partial t} + \frac{\partial (u(E + p))}{\partial x} &= 0
+    \end{align}
+    
+    \item \textbf{Phương trình trạng thái:} $E = \frac{p}{\gamma - 1} + \frac{1}{2}\rho u^2$, $\gamma = 1.4$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Bài toán ống sốc Sod}
+
+Xét một ống dài được chia thành hai phần bằng nhau bởi một màng ngăn, với hai bên màng ngăn được bơm khí với mật độ và áp suất khác nhau:
+$$
+\rho_L = 1.0, \quad \rho_R = 0.125, \quad p_L = 1.0, \quad p_R = 0.1.
+$$
+và vận tốc ban đầu ở cả hai bên màng ngăn đều bằng 0.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{tube.png}
+\end{center}
+
+Khi ta loại bỏ màng ngăn ở thời điểm $t = 0$, thì sẽ có sự biến đổi mật độ, áp suất và vận tốc tại các vị trí trong ống. Mục tiêu của ta là theo dỗi sự biến đổi này.
+
+\end{frame}
+
+\section{Nghiệm chính xác bài toán Riemann}
+
+\begin{frame}{Cấu trúc nghiệm bài toán Riemann}
+
+Giả sử rằng $p_L > p_R$, khi đó cấu trúc nghiệm của bài toán sẽ bao gồm: một sóng giãn (Rarefaction wave) lan truyền về phía trái, một gián đoạn tiếp xúc (Contact discontinuity) ở giữa, và một sóng xung kích (Shock wave) lan truyền về phía phải. Cấu trúc này chia mặt phẳng $x-t$ thành 4 vùng cơ bản: vùng trái ($L$), vùng sao trái ($L^*$), vùng sao phải ($R^*$), và vùng phải ($R$)
+
+\begin{center}
+\begin{figure}[H]
+\centering
+\input{../figure/riemann_structure}
+\caption{Cấu trúc nghiệm bài toán Riemann trong mặt phẳng $x-t$ với $p_L > p_R$}
+\label{fig:riemann_structure}
+\end{figure}
+\end{center}
+\end{frame}
+
+\begin{frame}{Thuật toán giải nghiệm chính xác}
+\textbf{Mục tiêu:} Tìm áp suất vùng sao $p^*$ sao cho $u_L^* = u_R^* = u^*$
+
+\textbf{Bước 1:} Thiết lập các hàm vận tốc
+\begin{itemize}
+    \item Sóng giãn: $u_L^*(p) = u_L + \frac{2a_L}{\gamma-1}\left[ 1 - \left( \frac{p}{p_L} \right)^{\frac{\gamma-1}{2\gamma}} \right]$
+    \item Sóng shock: $u_R^*(p) = u_R + (p - p_R) \sqrt{\frac{A_R}{p + B_R}}$
+\end{itemize}
+
+\textbf{Bước 2:} Giải phương trình $f(p) = u_L^*(p) - u_R^*(p) = 0$
+
+\textbf{Bước 3:} Tính các biến trạng thái vùng sao
+
+\textbf{Bước 4:} Xác định nghiệm tại $(x,t)$
+\end{frame}
+
+\begin{frame}{Chi tiết Newton-Raphson}
+\textbf{Công thức lặp:}
+$$p_{k+1} = p_k - \frac{f(p_k)}{f'(p_k)}$$
+
+\textbf{Giá trị khởi tạo:}
+$$p_0 = \frac{p_L + p_R}{2}$$
+
+\textbf{Điều kiện dừng:}
+$$\frac{|p_{k+1} - p_k|}{p_k} < 10^{-6}$$
+
+\textbf{Hằng số:} $A_R = \frac{2}{(\gamma+1)\rho_R}$, $B_R = \frac{\gamma-1}{\gamma+1}p_R$
+\end{frame}
+
+\section{Phương pháp thể tích hữu hạn}
+
+\begin{frame}{Nguyên lý phương pháp thể tích hữu hạn}
+Ta có dạng tổng quát của phương trình Euler cho trường hợp một chiều:
+\[
+w_t + f(w)_x = 0.
+\]
+Ta xét hệ phương trình trên trên một miền tính toán là $\Omega = \{(x, t) : 0 \leq t \leq t_{\text{final}}, a(t) \leq x \leq b(t) \}$, với $t_{\text{final}}$ là thời điểm cuối cùng mà ta muốn khảo sát, $a(t)$, $b(t)$ là biên của miền tính toán, thỏa điều kiện đầu $u(x, 0) = u_0(x)$.
+Ta chia miền $\Omega$ ban đầu thành các miền nhỏ hơn: $[x_{i - 1/2}, x_{i + 1/2}] \times [t^n, t^{n+1}]$.
+    
+\begin{center}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.6]
+    % Draw axes
+    \draw[->] (0,0) -- (6,0) node[right] {$x$};
+    \draw[->] (0,0) -- (0,4) node[above] {$t$};
+    
+    % Draw the domain cell with solid lines
+    \draw[thick] (2,1.5) rectangle (4,2.5);
+    
+    % Dashed lines from axes to domain cell
+    \draw[dashed] (2,0) -- (2,1.5);
+    \draw[dashed] (4,0) -- (4,1.5);
+    \draw[dashed] (0,1.5) -- (2,1.5);
+    \draw[dashed] (0,2.5) -- (2,2.5);
+    
+    % Tick marks on x-axis
+    \draw (2,0) -- (2,-0.1);
+    \draw (4,0) -- (4,-0.1);
+    
+    % Tick marks on t-axis
+    \draw (0,1.5) -- (-0.1,1.5);
+    \draw (0,2.5) -- (-0.1,2.5);
+    
+    % x-axis labels
+    \node[below] at (2,0) {$x_{i-1/2}$};
+    \node[below] at (4,0) {$x_{i+1/2}$};
+    
+    % t-axis labels
+    \node[left] at (0,1.5) {$t^n$};
+    \node[left] at (0,2.5) {$t^{n+1}$};
+    
+    % Arrow pointing to the domain with label outside
+    \draw[->] (5,3) -- (3.5,2.2);
+    \node[right] at (5,3) {$[x_{i-1/2}, x_{i+1/2}] \times [t^n, t^{n+1}]$};
+    
+\end{tikzpicture}
+% \caption{Rời rạc hóa miền tính toán $\Omega$ thành các miền con}
+% \label{fig:domain_discretization}
+\end{figure}
+    
+\end{center}
+\end{frame}
+
+\begin{frame}{Biến đổi tích phân và công thức cập nhật}
+\textbf{Bước 1:} Lấy tích phân trên miền con
+$$\int_{t_n}^{t_{n+1}} \int_{x_{i-1/2}}^{x_{i+1/2}} \left( w_t + f(w)_x \right) dx \, dt = 0$$
+
+\textbf{Bước 2:} Áp dụng định lý Newton-Leibniz
+$$\int_{x_{i-1/2}}^{x_{i+1/2}} w(x, t_{n+1}) dx - \int_{x_{i-1/2}}^{x_{i+1/2}} w(x, t_n) dx + \int_{t_n}^{t_{n+1}} [f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t))] dt = 0$$
+
+\textbf{Bước 3:} Định nghĩa giá trị trung bình và thông lượng số
+$$W_i^n = \frac{1}{\Delta x}\int_{x_{i-1/2}}^{x_{i+1/2}} w(x, t_n) dx, \quad F_{i+1/2} = \frac{1}{\Delta t}\int_{t_n}^{t_{n+1}} f(w(x_{i+1/2}, t)) dt$$
+
+\textbf{Kết quả:} Công thức cập nhật FVM
+$$W_i^{n+1} = W_i^n - \frac{\Delta t}{\Delta x} \left( F_{i+1/2} - F_{i-1/2} \right)$$
+\end{frame}
+
+\begin{frame}{Xấp xỉ thông lượng số - Three-point stencil}
+Giả sử giá trị của $F^n_{i+1/2}$ chỉ phụ thuộc vào các giá trị của $W_i^n$ và $W_{i+1}^{n}$, khi đó ta có thể xấp xỉ $F^n_{i+1/2}$ như sau:
+
+\[
+F^n_{i+1/2} \approx \mathcal{F} (W_i^n, W^n_{i+1}).
+\]
+Bằng cách xấp xỉ tương tự cho $F^n_{i-1/2}$, ta có kết quả sau:
+\[
+[W]_i^{n+1} = [W]_i^n - \frac{\Delta t}{\Delta x_i} \left( \mathcal{F} (W_i^n, W^n_{i+1}) - \mathcal{F} (W_{i-1}^n, W^n_{i})\right).
+\]
+
+Cách xấp xỉ như trên làm cho $W_i^{n+1}$ chỉ phụ thuộc vào $W_{i-1}^{n}, W_i^{n}$ và $W_{i+1}^{n}$, do đó ta gọi nó là phương pháp three-point stencil. Với mỗi cách chọn $\mathcal{F}$, ta có được một phương pháp số cho phương trình Euler.
+
+Ta chọn $F^n_{i+1/2} \approx \mathcal{F} (W_i^n, W^n_{i+1}) = \dfrac{1}{2}(f(W_i^n) + f(W_{i+1}^n))$, khi đó phương trình cập nhật trở thành:
+\begin{align*}
+    W_i^{n+1} &=  W_i^n - \frac{\Delta t}{2\Delta x} \left[ f(W_i^n) + f(W_{i+1}^n) - f(W_{i-1}^n) - f(W_i^n) \right] \\ 
+    &= W_i^n - \frac{\Delta t}{2\Delta x} \left( f(W_{i+1}^n) - f(W_{i-1}^n)\right) 
+\end{align*}
+
+
+\end{frame}
+
+\begin{frame}{Phương pháp Lax-Friedrichs}
+Phương pháp Lax-Friedrich là một trong những phương pháp đơn giản nhất để giải hệ phương trình Euler. Bằng cách thay đổi $W_i^n = \dfrac{W_{i+1}^n + W_{i-1}^n}{2}$ vào phương trình sai phân trung tâm, ta có được phương pháp Lax-Friedrich:
+\[
+W_i^{n+1} = \dfrac{W_{i-1}^n + W_{i+1}^n}{2} - \frac{\Delta t}{2\Delta x} \left( f(W_{i+1}^n) - f(W_{i-1}^n) \right).
+\]
+Đặc điểm của phương pháp Lax-Friedrich:
+\begin{itemize}
+    \small
+    \item Sai số lớn tại vùng shock và contact discontinuity
+    \item Hiện tượng tán xạ (smearing) rõ rệt
+    \item Độ chính xác thấp nhưng ổn định
+\end{itemize}
+Dưới đây là kết quả áp dụng phương pháp Lax-Friedrich cho bài toán:
+\end{frame}
+
+\begin{frame}{Kết quả Lax-Friedrichs}
+\begin{center}
+\scalebox{0.6}{\input{../figure/lf_results}}
+\end{center}
+\vspace{-0.3cm}
+\end{frame}
+
+\begin{frame}{Phương pháp Local Lax-Friedrichs}
+Phương pháp local Lax-Friedrich (LLF) là phương pháp cải tiến cho Lax-Friedrich. Phương pháp này hoạt động bằng cách thay thế giá trị $\dfrac{\Delta t}{\Delta x}$ bằng một giá trị cục bộ $\alpha$. Thành phần được thêm vào này được gọi là vận tốc truyền sóng cực đại (Maximum Local Wave Speed):
+\[
+F_{i+1/2}^{LLF}(W_-, W_+) = \frac{1}{2} \left( f(W_-) + f(W_+) \right) - \dfrac{\alpha_{1/2}}{2} \left( W_+ - W_- \right).
+\]
+Hệ số $\alpha_{i+1/2}$ được tính bằng công thức
+\[
+\alpha_{i+1/2} = \max \left( |f'(W_i)|, |f'(W_{i+1})| \right)
+\]
+đối với phương trình vô hướng, còn đối với phương trình Euler thì ta có:
+\[
+\alpha_{i+1/2} = \max \left( |\lambda(A(W_i))|, |\lambda(A(W_{i+1}))| \right)
+\]
+
+Dưới đây là kết quả áp dụng phương pháp Local Lax-Friedrich cho bài toán:
+\end{frame}
+
+\begin{frame}{Kết quả Local Lax-Friedrichs}
+\begin{center}
+\scalebox{0.6}{\input{../figure/llf_results}}
+\end{center}
+\end{frame}
+
+\section{Phương pháp bậc 2}
+
+\begin{frame}{Phương pháp bậc 2 theo không gian}
+Phương pháp LLF ở trên cho ta sai số bậc một theo không gian, vì nó dựa trên việc tái cấu trúc từng đoạn bằng hằng số. Cụ thể hơn, trong công thức
+\begin{equation*}
+\begin{aligned}
+    F_{i+1/2} = \frac{1}{2} \left( f(W_{i+1/2}^-) + f(W_{i+1/2}^+) \right) - \frac{\alpha_{i+1/2}}{2} (W_{i+1/2}^+ - W_{i+1/2}^-),
+\end{aligned}
+\end{equation*}
+đối với LLF thì ta có $W_{i+1/2}^- = W_i, W_{i+1/2}^+ = W_{i+1}$.
+
+Để tăng độ chính xác lên bậc 2 theo không gian, thay vì để $W_{i+1/2}^-$ và $W_{i+1/2}^+$ như trên, ta sẽ dùng các công thức sau:
+\[
+W_{i+1/2}^- = W_i + W_i' \frac{\Delta x}{2}, \quad W_{i+1/2}^+ = W_{i+1} - W_{i+1}' \frac{\Delta x}{2}.
+\]
+Phương pháp này được gọi là piecewise linear construction.
+Trong công thức, $W_i'$ là đạo hàm tại $x_i$, tuy nhiên có thể được thay thế bởi việc dùng hàm minmod với hai tham số:
+\[
+W'_i = \frac{1}{\Delta x}\text{minmod}(W_i - W_{i-1}, W_{i+1} - W_i).
+\]
+Với hàm minmod được cho bởi
+\[
+\text{minmod(a, b)} = \dfrac{1}{2}(\text{sgn}(a) + \text{sgn}(b)) \min(|a|, |b|).
+\]
+\end{frame}
+
+\begin{frame}{Kết quả bậc 2 theo không gian}
+\begin{center}
+\scalebox{0.6}{\input{../figure/spatial2_results}}
+\end{center}
+\end{frame}
+
+\begin{frame}{Phương pháp bậc 2 theo thời gian - Heun}
+Xét phương trình Euler 1 chiều:
+\begin{equation*}
+    w_t + f(w)_x = 0
+\end{equation*}
+Trước tiên, ta lấy tích phân phương trình ban đầu trên đoạn $[x_{i-\frac{1}{2}}, x_{i+\frac{1}{2}}]$:
+\[
+\int_{x_{i-1/2}}^{x_{i+1/2}} \left( \frac{\partial w}{\partial t} + \frac{\partial f(w)}{\partial x} \right) dx = 0
+\]
+Áp dụng quy tắc Leibniz cho số hạng đầu tiên và định lý cơ bản của giải tích cho số hạng thứ hai:
+\begin{align*}
+        \int_{x_{i-1/2}}^{x_{i+1/2}}  \frac{\partial w}{\partial t} dx &= \frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx, \\
+        \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w)}{\partial x}  dx &= \left[ f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) \right].
+\end{align*}
+\end{frame}
+
+\begin{frame}{Biến đổi về hệ ODE (tiếp)}
+Suy ra:
+\[
+\frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx + \left[ f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) \right] = 0.
+\]
+Chia hai vế của phương trình trên cho $\Delta x$:
+\[
+\frac{1}{\Delta x}\frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx + \frac{1}{\Delta x}\left[ f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) \right] = 0.
+\]
+Đặt giá trị trung bình trên ô (cell average) và các thông lượng số (numerical flux):
+\[
+\langle w \rangle_i = \frac{1}{\Delta x}\int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx, \quad F_{i+1/2} \approx f(w(x_{i+1/2}, t)), \quad F_{i-1/2} \approx f(w(x_{i-1/2}, t)).
+\]
+Cuối cùng ta thu được phương trình:
+\[
+\frac{d\langle w \rangle_i}{dt} = - \frac{F_{i+1/2} - F_{i-1/2}}{\Delta x} =: \mathcal{F}_i(w).
+\]
+Hệ phương trình thu được sau cùng là hệ ODE và có thể được tính xấp xỉ nghiệm bằng cách dùng phương pháp số cho phương trình vi phân.
+\end{frame}
+
+\begin{frame}{Áp dụng công thức Heun}
+Công thức lặp tổng quát của phương pháp Heun để tìm nghiệm xấp xỉ $y_{i+1}$ tại bước $x_{i+1} = x_i + h$ (với $h$ là bước nhảy thời gian) được xác định như sau:
+\begin{equation*}
+    y_{i+1} = y_i + \frac{h}{2} \left[ f(x_i, y_i) + f\Big(x_i + h, \, y_i + h f(x_i, y_i)\Big)\right]
+\end{equation*}
+Trong đó, công thức có thể được diễn giải qua hai giai đoạn (Dự báo - Hiệu chỉnh):
+\begin{align*}
+    \text{Dự báo (Predictor):} & \quad \tilde{y}_{i+1} = y_i + h f(x_i, y_i) \\
+    \text{Hiệu chỉnh (Corrector):} & \quad y_{i+1} = y_i + \frac{h}{2} \left[ f(x_i, y_i) + f(x_{i+1}, \tilde{y}_{i+1}) \right]
+\end{align*}
+
+\noindent Để áp dụng công thức này vào bài toán, trước tiên ta sẽ "lắp ghép" các vector biến bảo toàn $W_i (\approx \langle w \rangle_i)$ và vector tốc độ biến thiên $\mathcal{F}_i$ thành các Vector trạng thái toàn cục $W$ và $\mathcal{F}$, khi đó ta có hệ:
+\[
+\dfrac{dW}{dt} = \mathcal{F}(W).
+\]
+\end{frame}
+
+\begin{frame}{Thuật toán Heun cho FVM}
+Áp dụng công thức Heun với bước thời gian $\Delta t$, ta có công thức cập nhật nghiệm:
+\[
+W^{n+1} = W^n + \frac{\Delta t}{2} \left[ \mathcal{F}(W^n) + \mathcal{F}\Big(W^n + \Delta t \mathcal{F}(W^n)\Big)\right].
+\]
+Cụ thể hơn, thuật toán được thực hiện qua 4 bước:
+\begin{enumerate}
+    \item Bước 1 (Tính độ dốc ban đầu):
+    Tính toán vector thay đổi dựa trên trạng thái hiện tại $W^n$:
+    \begin{equation*}
+        K_1 = \mathcal{F}(W^n)
+    \end{equation*}
+
+    \item Bước 2 (Dự báo - Predictor):
+    Ước lượng nghiệm trung gian $W^*$ (nghiệm dự báo) bằng phương pháp Euler thuận:
+    \begin{equation*}
+        W^* = W^n + \Delta t K_1
+    \end{equation*}
+\end{enumerate}
+\end{frame}
+
+\begin{frame}{Thuật toán Heun (tiếp)}
+\begin{enumerate}
+    \setcounter{enumi}{2}
+    \item Bước 3 (Tính độ dốc tại điểm dự báo):
+    Tính toán vector thay đổi dựa trên trạng thái dự báo $W^*$:
+    \begin{equation*}
+        K_2 = \mathcal{F}(W^*)
+    \end{equation*}
+
+    \item Bước 4 (Hiệu chỉnh - Corrector):
+    Cập nhật nghiệm chính thức tại bước thời gian mới $n+1$ bằng trung bình cộng của hai độ dốc:
+    \begin{equation*}
+        W^{n+1} = W^n + \frac{\Delta t}{2} (K_1 + K_2)
+    \end{equation*}
+\end{enumerate}
+
+\textbf{Ưu điểm của phương pháp Heun:}
+\begin{itemize}
+    \item Độ chính xác bậc 2 theo thời gian
+    \item Ổn định với bước thời gian lớn hơn phương pháp Euler thuận
+    \item Giảm sai số tích lũy theo thời gian đáng kể
+    \item Dễ cài đặt và tính toán hiệu quả
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Kết quả bậc 2 theo thời gian}
+\begin{center}
+\scalebox{0.6}{\input{../figure/temporal2_results}}
+\end{center}
+\vspace{-0.3cm}
+\begin{itemize}
+    \small
+    \item Giảm sai số tích lũy theo thời gian đáng kể
+    \item Cải thiện độ chính xác tổng thể so với phương pháp Euler thuận
+    \item Ổn định với bước thời gian lớn hơn
+    \item Hiệu quả tính toán hợp lý cho độ chính xác đạt được
+\end{itemize}
+\end{frame}
+
+\section{So sánh nghiệm}
+
+\begin{frame}{Tổng hợp kết quả từng phương pháp}
+\begin{center}
+\scalebox{0.6}{\input{../figure/methods_comparison_fig}}
+\end{center}
+\vspace{-0.3cm}
+\begin{itemize}
+    \small
+    \item So sánh trực quan giữa các phương pháp số và nghiệm chính xác
+    \item Thể hiện rõ sự cải thiện qua từng phương pháp
+    \item Đánh giá hiệu quả của các kỹ thuật nâng cao độ chính xác
+    \item Cơ sở cho việc lựa chọn phương pháp phù hợp với yêu cầu bài toán
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Phân tích chi tiết vị trí sai số}
+\textbf{Vị trí tập trung sai số:}
+
+Đồ thị sai số không phân bố đều mà tập trung tại các vùng thay đổi mạnh của trường dòng chảy:
+\begin{itemize}
+    \item \textbf{Sóng xung kích (Shock Wave)} tại $x \approx 0.85$: Đây là nơi sai số đạt giá trị cực đại ($L_\infty$). Do lưới tính toán hữu hạn không thể mô tả hoàn hảo một bước nhảy thẳng đứng, nghiệm số luôn có xu hướng bị trượt (smearing) tại vị trí này.
+    \item \textbf{Gián đoạn tiếp xúc (Contact Discontinuity)} tại $x \approx 0.5$: Tại đây xuất hiện một đỉnh sai số thứ hai, thường thấp hơn và rộng hơn so với tại vị trí shock.
+    \item \textbf{Vùng sóng giãn (Rarefaction Wave)}: Sai số thấp và phân bố trải dài, phản ánh khả năng mô tả tốt các biến đổi trơn của thuật toán.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{So sánh hiệu quả các phương pháp}
+\textbf{Phương pháp Lax-Friedrichs (Cấp 1):}
+\begin{itemize}
+    \item Do độ nhớt nhân tạo (numerical viscosity) lớn, phương pháp này gây ra hiện tượng tán xạ (dissipation) mạnh
+    \item Sai số $L_1$ lớn do biên dạng nghiệm bị làm trơn quá mức (excessive smearing) tại các vị trí gián đoạn
+\end{itemize}
+
+\textbf{Các phương pháp độ phân giải cao (2nd Order):}
+\begin{itemize}
+    \item Sử dụng bộ hạn chế từ thông (flux limiters), các phương pháp này giảm thiểu đáng kể sai số tán xạ, cho biên dạng sóng sắc nét hơn (sharper resolution)
+    \item Sai số $L_1$ nhỏ hơn đáng kể so với phương pháp cấp 1
+    \item Việc không xuất hiện các dao động giả (oscillations) gần vùng shock cho thấy tính ổn định TVD (Total Variation Diminishing) được đảm bảo
+\end{itemize}
+
+\textbf{Kết luận tổng quát:}
+\begin{itemize}
+    \item Phương pháp bậc cao cho kết quả chính xác hơn nhưng đòi hỏi chi phí tính toán lớn hơn
+    \item Cần cân nhắc giữa độ chính xác và hiệu quả tính toán
+\end{itemize}
+\end{frame}
+
+\section{Kết luận}
+
+\begin{frame}{Những đóng góp chính của nghiên cứu}
+\textbf{Xây dựng cơ sở lý thuyết vững chắc:}
+\begin{itemize}
+    \item Trình bày chi tiết hệ phương trình Euler và các tính chất vật lý
+    \item Giải thích bản chất áp suất, động lượng và năng lượng trong dòng khí
+    \item Phân tích entropy và vai trò trong việc loại bỏ nghiệm phi vật lý
+\end{itemize}
+
+\textbf{Phát triển các phương pháp số:}
+\begin{itemize}
+    \item Cài đặt thành công bằng Matlab các phương pháp thể tích hữu hạn
+    \item Phương pháp Lax-Friedrich cơ bản - đơn giản, ổn định
+    \item Phương pháp Local Lax-Friedrich cải tiến - giảm khuếch tán
+    \item Phương pháp bậc 2 theo không gian - độ phân giải cao
+    \item Phương pháp bậc 2 theo thời gian - giảm sai số tích lũy
+\end{itemize}
+
+\textbf{Kiểm nghiệm và so sánh:}
+\begin{itemize}
+    \item Áp dụng vào bài toán ống sốc Sod cổ điển
+    \item So sánh kết quả với nghiệm chính xác bài toán Riemann
+    \item Đánh giá độ chính xác và hiệu quả của từng phương pháp
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Hướng phát triển tương lai}
+\textbf{Phương pháp bậc cao hơn:}
+\begin{itemize}
+    \item WENO (Weighted Essentially Non-Oscillatory) - bậc 3, 5
+    \item Discontinuous Galerkin (DG) - phương pháp phần tử hữu hạn
+    \item Cải tiến các bộ hạn chế flux limiters
+\end{itemize}
+
+\textbf{Mở rộng đa chiều:}
+\begin{itemize}
+    \item Bài toán 2D, 3D với lưới cấu trúc và không cấu trúc
+    \item Xử lý biên phức tạp và điều kiện biên
+    \item Thích ứng lưới (Adaptive Mesh Refinement - AMR)
+\end{itemize}
+
+\textbf{Tối ưu hóa hiệu suất:}
+\begin{itemize}
+    \item Song song hóa và sử dụng GPU
+    \item Phân tán miền (Domain Decomposition)
+    \item High Performance Computing (HPC)
+\end{itemize}
+
+\textbf{Ứng dụng thực tế:}
+\begin{itemize}
+    \item Động lực học khí - thiết kế ô tô, máy bay
+    \item Mô phỏng vụ nổ và sóng xung kích
+    \item Dự báo thời tiết và khí hậu
+    \item Thiên văn học và vật lý plasma
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Lời cảm ơn}
+\begin{center}
+\Huge Cảm ơn các thầy cô và các bạn đã lắng nghe!
+
+\vspace{1.5cm}
+
+\Large Có câu hỏi nào không ạ?
+
+\vspace{1cm}
+
+\normalsize
+\textit{"Khoa học là việc tìm hiểu thế giới qua những con số và phương trình"}
+\end{center}
+\end{frame}
+
+\end{document}

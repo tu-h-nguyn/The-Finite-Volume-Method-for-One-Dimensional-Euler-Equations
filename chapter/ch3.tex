@@ -1,0 +1,218 @@
+\section{Bài toán Riemann và Cấu trúc sóng}
+\subsection{Giới thiệu chung}
+
+Bài toán ống sốc của Sod, được giới thiệu bởi Gary A. Sod vào năm 1978, là một trường hợp kiểm thử (test case) kinh điển trong động lực học chất lưu tính toán (CFD). Đây là một dạng cụ thể của \textbf{bài toán Riemann} cho hệ phương trình Euler đối với khí lý tưởng. 
+
+Mục đích chính của bài toán là đánh giá khả năng của các thuật toán số trong việc bắt giữ các gián đoạn vật lý như sóng sốc và gián đoạn tiếp xúc, đồng thời xử lý các vùng biến đổi liên tục như sóng loãng.
+
+Xét một ống dài được chia thành hai phần bằng nhau bởi một màng ngăn, với hai bên màng ngăn được bơm khí với mật độ và áp suất khác nhau:
+$$
+\rho_L = 1.0, \quad \rho_R = 0.125, \quad p_L = 1.0, \quad p_R = 0.1.
+$$
+và vận tốc ban đầu ở cả hai bên màng ngăn đều bằng 0.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{tube.png}
+\caption{Sơ đồ bài toán ống sốc Sod}
+\label{fig:sod_tube}
+\end{figure}
+
+Bài toán trên có thể được giải thông qua việc giải phương trình sau:
+
+\begin{equation*}
+    \frac{\partial \mathbf{W}}{\partial t} + \frac{\partial \mathbf{F}(\mathbf{W})}{\partial x} = 0
+\end{equation*}
+
+Các vector cột trong phương trình trên được định nghĩa cụ thể thông qua các biến vật lý:
+
+\begin{equation*}
+    \mathbf{W} = \begin{bmatrix}
+    w_1 \\
+    w_2 \\
+    w_3
+    \end{bmatrix} = \begin{bmatrix}
+    \rho \\
+    \rho u \\
+    \rho E
+    \end{bmatrix}, \quad
+    \mathbf{F}(\mathbf{W}) = \begin{bmatrix}
+    f_1 \\
+    f_2 \\
+    f_3
+    \end{bmatrix} = \begin{bmatrix}
+    \rho u \\
+    \rho u^2 + p \\
+    u(\rho E + p)
+    \end{bmatrix}
+\end{equation*}
+
+Với $\rho$ là mật độ, $u$ là vận tốc, $p$ là áp suất và $E$ là tổng năng lượng trên một đơn vị thể tích. Mối liên hệ giữa các đại lượng được xác định qua phương trình trạng thái khí lý tưởng:
+\begin{equation*}
+E = \frac{p}{\gamma - 1} + \frac{1}{2}\rho u^2
+\end{equation*}
+Thông thường, hệ số nhiệt dung đẳng áp được chọn là $\gamma = 1.4$.
+
+
+\subsection{Phương pháp giải nghiệm chính xác}
+
+Ta xét bài toán Riemann đối với hệ phương trình Euler 1 chiều cho khí lý tưởng với tỷ số nhiệt dung $\gamma$. Điều kiện đầu tại thời điểm $t=0$ được cho bởi trạng thái gián đoạn tại vị trí $x_0$:
+\begin{equation*}
+    W(x, 0) = \begin{cases} 
+    W_L = (\rho_L, u_L, p_L)^T & \text{nếu } x < x_0 \\
+    W_R = (\rho_R, u_R, p_R)^T & \text{nếu } x > x_0
+    \end{cases}
+\end{equation*}
+Giả sử rằng $p_L > p_R$, khi đó cấu trúc nghiệm của bài toán sẽ bao gồm: một sóng giãn (Rarefaction wave) lan truyền về phía trái, một gián đoạn tiếp xúc (Contact discontinuity) ở giữa, và một sóng xung kích (Shock wave) lan truyền về phía phải. Cấu trúc này chia mặt phẳng $x-t$ thành 4 vùng cơ bản: vùng trái ($L$), vùng sao trái ($L^*$), vùng sao phải ($R^*$), và vùng phải ($R$) (xem ảnh minh họa bên dưới).
+
+\begin{figure}[H]
+\centering
+\input{figure/riemann_structure}
+\caption{Cấu trúc nghiệm bài toán Riemann trong mặt phẳng $x-t$ với $p_L > p_R$}
+\label{fig:riemann_structure}
+\end{figure}
+
+Để tìm nghiệm chính xác $W(x,t)$ tại một thời điểm $t > 0$, ta thực hiện theo các bước sau:
+
+\textbf{Bước 1: Thiết lập phương trình cho áp suất vùng sao ($p^*$)}
+
+Do vận tốc $u$ và áp suất $p$ liên tục qua gián đoạn tiếp xúc, ta có $u_L^* = u_R^* = u^*$ và $p_L^* = p_R^* = p^*$. Ta thiết lập mối quan hệ giữa vận tốc và áp suất qua các sóng để tìm $p^*$.
+
+Hàm vận tốc qua sóng giãn bên trái ($L \to L^*$) được xác định bởi bất biến Riemann:
+\begin{equation*}
+    u_L^*(p) = u_L + \frac{2a_L}{\gamma-1}\left[ 1 - \left( \frac{p}{p_L} \right)^{\frac{\gamma-1}{2\gamma}} \right]
+\end{equation*}
+trong đó $a_L = \sqrt{\gamma p_L / \rho_L}$ là vận tốc âm thanh tại miền trái.
+
+Hàm vận tốc qua sóng xung kích bên phải ($R \to R^*$) được xác định bởi hệ thức Rankine-Hugoniot:
+\begin{equation*}
+    u_R^*(p) = u_R + (p - p_R) \sqrt{\frac{A_R}{p + B_R}}
+\end{equation*}
+với các hằng số $A_R = \frac{2}{(\gamma+1)\rho_R}$ và $B_R = \frac{\gamma-1}{\gamma+1}p_R$.
+
+Tại vùng sao, vận tốc phải cân bằng, tức là $u_L^*(p^*) = u_R^*(p^*)$. Do đó, ta cần tìm nghiệm $p^*$ của phương trình phi tuyến:
+\begin{equation*}
+    f(p) = u_L^*(p) - u_R^*(p) = 0
+\end{equation*}
+
+\textbf{Bước 2: Giải lặp tìm áp suất $p^*$}
+
+Do phương trình $f(p)=0$ là phi tuyến, ta sử dụng phương pháp lặp Newton-Raphson để tìm nghiệm gần đúng với độ chính xác mong muốn. Giá trị khởi tạo $p_{(0)}$ có thể chọn bằng trung bình cộng hoặc xấp xỉ tuyến tính (Two-Rarefaction approximation):
+\begin{equation*}
+    p_{(0)} = \frac{p_L + p_R}{2} \quad \text{hoặc} \quad p_{(0)} = \left[ \frac{a_L + a_R - \frac{\gamma-1}{2}(u_R - u_L)}{\frac{a_L}{p_L^{(\gamma-1)/(2\gamma)}} + \frac{a_R}{p_R^{(\gamma-1)/(2\gamma)}}} \right]^{\frac{2\gamma}{\gamma-1}}
+\end{equation*}
+
+Công thức lặp tại bước $k$:
+\begin{equation*}
+    p_{(k+1)} = p_{(k)} - \frac{f(p_{(k)})}{f'(p_{(k)})}
+\end{equation*}
+
+trong đó đạo hàm $f'(p)$ được tính bằng:
+\begin{equation*}
+    f'(p) = \frac{\partial u_L^*}{\partial p} - \frac{\partial u_R^*}{\partial p}
+\end{equation*}
+Quá trình lặp dừng lại khi sai số tương đối $\frac{|p_{(k+1)} - p_{(k)}|}{p_{(k)}} < \epsilon$, với $\epsilon$ là sai số cho phép (ví dụ $10^{-6}$).
+
+\textbf{Bước 3: Xác định các biến trạng thái trong vùng sao}
+
+Sau khi tìm được áp suất hội tụ $p^*$, ta tính vận tốc dòng $u^*$ bằng cách thay $p^*$ vào phương trình (2) hoặc (3). Tiếp theo, ta xác định khối lượng riêng tại hai phía của gián đoạn tiếp xúc:
+
+Tại vùng sao trái ($L^*$), sử dụng quan hệ đẳng entropy:
+\begin{equation*}
+    \rho_L^* = \rho_L \left( \frac{p^*}{p_L} \right)^{1/\gamma}
+\end{equation*}
+
+Tại vùng sao phải ($R^*$), sử dụng quan hệ Rankine-Hugoniot:
+\begin{equation*}
+    \rho_R^* = \rho_R \left( \frac{1 + \beta (p^*/p_R)}{\beta + (p^*/p_R)} \right), \quad \text{với } \beta = \frac{\gamma+1}{\gamma-1}
+\end{equation*}
+
+Năng lượng tổng của các vùng sao được tính theo:
+\begin{equation*}
+    E_L^* = \frac{p^*}{\gamma-1} + \frac{1}{2}\rho_L^* (u^*)^2, \quad E_R^* = \frac{p^*}{\gamma-1} + \frac{1}{2}\rho_R^* (u^*)^2
+\end{equation*}
+
+\textbf{Bước 4: Tổng hợp nghiệm tại điểm $(x,t)$}
+
+Cuối cùng, ta xác định giá trị của $W(x,t)$ dựa trên vị trí của $x$ so với các đặc trưng sóng. Các vận tốc truyền sóng được tính như sau:
+\begin{itemize}
+    \item Vận tốc đầu sóng giãn: $S_{HL} = u_L - a_L$
+    \item Vận tốc đuôi sóng giãn: $S_{TL} = u^* - a_L^*$, với $a_L^* = \sqrt{\gamma p^*/\rho_L^*}$
+    \item Vận tốc gián đoạn tiếp xúc: $S_{Contact} = u^*$
+    \item Vận tốc sóng xung kích: $S_{Shock} = u_R + a_R \sqrt{\frac{\gamma+1}{2\gamma}\frac{p^*}{p_R} + \frac{\gamma-1}{2\gamma}}$
+\end{itemize}
+
+\textbf{Lưu ý về gián đoạn tiếp xúc:} Gián đoạn tiếp xúc di chuyển với vận tốc $u^*$ và duy trì sự liên tục của áp suất và vận tốc nhưng cho phép sự gián đoạn trong mật độ. Qua gián đoạn này, $p_L^* = p_R^* = p^*$ và $u_L^* = u_R^* = u^*$, nhưng $\rho_L^* \neq \rho_R^*$.
+
+Khi đó, nghiệm tại vị trí $x$ và thời điểm $t$ là:
+\begin{equation*}
+    W(x,t) = \begin{cases} 
+    W_L & \text{nếu } x/t < S_{HL} \\
+    W_{fan} & \text{nếu } S_{HL} \leq x/t \leq S_{TL} \\
+    W_L^* & \text{nếu } S_{TL} < x/t < S_{Contact} \\
+    W_R^* & \text{nếu } S_{Contact} < x/t < S_{Shock} \\
+    W_R & \text{nếu } x/t > S_{Shock}
+    \end{cases}
+\end{equation*}
+Trong đó $W_{fan}$ là nghiệm bên trong sóng giãn, được xác định bởi tính chất tự tương tự (self-similar) $\xi = x/t$:
+\begin{equation*}
+    u_{fan} = \frac{2}{\gamma+1}(a_L + \xi + \frac{\gamma-1}{2}u_L)
+\end{equation*}
+\begin{equation*}
+    a_{fan} = u_{fan} - \xi
+\end{equation*}
+\begin{equation*}
+    \rho_{fan} = \rho_L \left(\frac{a_{fan}}{a_L}\right)^{2/(\gamma-1)}
+\end{equation*}
+\begin{equation*}
+    p_{fan} = p_L \left(\frac{a_{fan}}{a_L}\right)^{2\gamma/(\gamma-1)}
+\end{equation*}
+\begin{equation*}
+    E_{fan} = \frac{p_{fan}}{\gamma-1} + \frac{1}{2}\rho_{fan} u_{fan}^2
+\end{equation*}
+
+\textbf{Bước 5: Cập nhật vị trí các cấu trúc sóng theo bước thời gian}
+
+Giả sử tại thời điểm $t^n$, ta đã biết vị trí của các điểm đặc trưng của hệ sóng: đầu sóng giãn ($x_{Head}^n$), đuôi sóng giãn ($x_{Tail}^n$), gián đoạn tiếp xúc ($x_{CD}^n$) và sóng xung kích ($x_{Shock}^n$).
+
+Để xác định trạng thái tại thời điểm tiếp theo $t^{n+1} = t^n + \Delta t$, ta thực hiện cập nhật vị trí các điểm này dựa trên các vận tốc truyền sóng (Wave Speeds) đã tính toán ở các bước trước. Do bài toán Riemann có tính tự tương tự, các vận tốc này là hằng số đối với các trạng thái $W_L, W_R$ không đổi.
+
+Các phương trình cập nhật vị trí như sau:
+
+\begin{align}
+    x_{Head}^{n+1} &= x_{Head}^n + S_{Head} \cdot \Delta t \\
+    x_{Tail}^{n+1} &= x_{Tail}^n + S_{Tail} \cdot \Delta t \\
+    x_{CD}^{n+1}   &= x_{CD}^n   + u^* \cdot \Delta t \\
+    x_{Shock}^{n+1}&= x_{Shock}^n + S_{Shock} \cdot \Delta t
+\end{align}
+
+Trong đó, các vận tốc truyền sóng được xác định từ các biến trạng thái vùng sao ($u^*, p^*, \rho_L^*$) đã giải được:
+\begin{itemize}
+    \item $S_{Head} = u_L - a_L$ : Vận tốc âm thanh lan truyền vào miền trái (chưa bị nhiễu động).
+    \item $S_{Tail} = u^* - a_L^*$ : Vận tốc âm thanh lan truyền tại biên giới hạn của vùng sao trái, với $a_L^* = \sqrt{\gamma p^* / \rho_L^*}$.
+    \item $u^*$ : Vận tốc dòng chảy (convection velocity), chính là vận tốc di chuyển của gián đoạn tiếp xúc.
+    \item $S_{Shock}$ : Vận tốc lan truyền của sóng xung kích, xác định bởi hệ thức Rankine-Hugoniot:
+    \begin{equation*}
+        S_{Shock} = u_R + a_R \sqrt{\frac{\gamma+1}{2\gamma}\frac{p^*}{p_R} + \frac{\gamma-1}{2\gamma}}
+    \end{equation*}
+\end{itemize}
+
+\textbf{Lưu ý:} Tại bước thời gian đầu tiên ($t^0 = 0$), tất cả các vị trí trên đều trùng nhau tại vị trí màng ngăn ban đầu $x_0$. Kích thước vùng sóng giãn (đoạn $[x_{Head}, x_{Tail}]$) sẽ tăng dần theo thời gian vì $S_{Head} < S_{Tail}$.
+
+\begin{figure}[H]
+\centering
+\input{figure/wave_update}
+\caption{Minh họa quá trình cập nhật vị trí các sóng từ $t^n$ lên $t^{n+1}$}
+\label{fig:wave_update}
+\end{figure}
+
+\subsection{Minh họa kết quả bài toán tại t = 0.2}
+
+Dưới đây là phần đồ thị minh họa cho kết quả giải nghiệm chính xác với $t = 0.2$. Phần code Matlab để giải bài toán này được đính kèm ở thư mục matlab.
+
+\begin{figure}[H]
+\centering
+\input{figure/riemann_results}
+\caption{Kết quả nghiệm chính xác bài toán Riemann tại t = 0.2}
+\label{fig:riemann_results}
+\end{figure}

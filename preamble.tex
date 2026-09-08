@@ -1,0 +1,278 @@
+\documentclass[12pt, a4paper, nocolor]{article}
+
+% -- encoding --
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage[vietnamese]{babel}
+
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[shortlabels]{enumitem}
+\usepackage{emptypage}
+\usepackage{subcaption}
+\usepackage{multicol}
+\usepackage[usenames, dvipsnames]{xcolor}
+
+\usepackage{lipsum}
+\usepackage{framed}
+\usepackage{setspace}
+\usepackage{extarrows}
+\usepackage{scrextend}
+\usepackage{commath}
+
+% -- page set up --
+\setlength{\parindent}{15pt}
+\usepackage[a4paper,bindingoffset=0.2in,%
+            left=0.7in,right=0.7in,top=1in,bottom=1in,%
+            footskip=.25in]{geometry}
+\addtolength\footskip{1cm}
+
+% -- math set up --
+\usepackage{amsmath, amsfonts, mathtools, amsthm, amssymb}
+\usepackage{mathrsfs}
+\usepackage{cancel}
+\usepackage{bbm}
+\usepackage{bm}
+\newcommand\N{\ensuremath{\mathbb{N}}}
+\newcommand\R{\ensuremath{\mathbb{R}}}
+\newcommand\Z{\ensuremath{\mathbb{Z}}}
+\renewcommand\O{\ensuremath{\emptyset}}
+\newcommand\Q{\ensuremath{\mathbb{Q}}}
+\newcommand\C{\ensuremath{\mathbb{C}}}
+\DeclareMathOperator{\sgn}{sgn}
+\usepackage{systeme}
+\let\svlim\lim\def\lim{\svlim\limits}
+\let\implies\Rightarrow
+\let\impliedby\Leftarrow
+\let\iff\Leftrightarrow
+\let\epsilon\varepsilon
+\usepackage{stmaryrd} % for \lightning
+\newcommand\contra{\scalebox{1.1}{$\lightning$}}
+
+% -- correct --
+\definecolor{correct}{HTML}{009900}
+\newcommand\correct[2]{\ensuremath{\:}{\color{red}{#1}}\ensuremath{\to }{\color{correct}{#2}}\ensuremath{\:}}
+\newcommand\green[1]{{\color{correct}{#1}}}
+
+% -- horizontal rule --
+\newcommand\hr{
+    \noindent\rule[0.5ex]{\linewidth}{0.5pt}
+}
+
+% -- hide parts --
+\newcommand\hide[1]{}
+
+% -- tikz -- 
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{intersections, angles, quotes, calc, positioning, shapes, arrows}
+% \usetikzlibrary{arrows.meta}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.13}
+\tikzset{
+    force/.style={thick, {Circle[length=2pt]}-stealth, shorten <=-1pt}
+}
+
+% -- Theorem set up --
+\usepackage{thmtools}
+\usepackage[framemethod=TikZ]{mdframed}
+\mdfsetup{skipabove=1em,skipbelow=0em, innertopmargin=5pt, innerbottommargin=6pt}
+
+\theoremstyle{definition}
+\makeatletter
+\@ifclasswith{article}{nocolor}{
+    \declaretheoremstyle[headfont=\bfseries\sffamily, bodyfont=\normalfont, mdframed={ nobreak } ]{thmgreenbox}
+    \declaretheoremstyle[headfont=\bfseries\sffamily, bodyfont=\normalfont, mdframed={ nobreak } ]{thmredbox}
+    \declaretheoremstyle[headfont=\bfseries\sffamily, bodyfont=\normalfont]{thmbluebox}
+    \declaretheoremstyle[headfont=\bfseries\sffamily, bodyfont=\normalfont]{thmblueline}
+    \declaretheoremstyle[headfont=\bfseries\sffamily, bodyfont=\normalfont, numbered=no, mdframed={ rightline=false, topline=false, bottomline=false, }, qed=\qedsymbol ]{thmproofbox}
+    \declaretheoremstyle[headfont=\bfseries\sffamily, bodyfont=\normalfont, numbered=no, mdframed={ nobreak, rightline=false, topline=false, bottomline=false } ]{thmexplanationbox}
+    \AtEndEnvironment{eg}{\null\hfill$\diamond$}%
+}{
+    \declaretheoremstyle[
+        headfont=\bfseries\sffamily\color{ForestGreen!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=ForestGreen, backgroundcolor=ForestGreen!10,
+        }
+    ]{thmgreenbox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\sffamily\color{NavyBlue!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=NavyBlue, backgroundcolor=NavyBlue!5,
+        }
+    ]{thmbluebox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\sffamily\color{NavyBlue!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=NavyBlue
+        }
+    ]{thmblueline}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\sffamily\color{RawSienna!70!black}, bodyfont=\normalfont,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=RawSienna, backgroundcolor=RawSienna!10,
+        }
+    ]{thmredbox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\sffamily\color{RawSienna!70!black}, bodyfont=\normalfont,
+        numbered=no,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=RawSienna, backgroundcolor=RawSienna!1,
+        },
+        qed=\qedsymbol
+    ]{thmproofbox}
+
+    \declaretheoremstyle[
+        headfont=\bfseries\sffamily\color{NavyBlue!70!black}, bodyfont=\normalfont,
+        numbered=no,
+        mdframed={
+            linewidth=2pt,
+            rightline=false, topline=false, bottomline=false,
+            linecolor=NavyBlue, backgroundcolor=NavyBlue!1,
+        },
+    ]{thmexplanationbox}
+}
+
+% -- use for english --
+\declaretheorem[style=thmgreenbox, name=Definition]{definition}
+\declaretheorem[style=thmbluebox, numbered=no, name=Example]{eg}
+\declaretheorem[style=thmbluebox, numbered=no, name=Exercise]{ex}
+\declaretheorem[style=thmredbox, name=Proposition]{prop}
+\declaretheorem[style=thmredbox, name=Theorem]{theorem}
+\declaretheorem[style=thmredbox, name=Lemma]{lemma}
+\declaretheorem[style=thmredbox, numbered=no, name=Corollary]{corollary}
+
+\@ifclasswith{article}{nocolor}{
+    \declaretheorem[style=thmproofbox, name=Proof]{replacementproof}
+    \declaretheorem[style=thmexplanationbox, name=Proof]{explanation}
+    \renewenvironment{proof}[1][\proofname]{\begin{replacementproof}}{\end{replacementproof}}
+}{
+    \declaretheorem[style=thmproofbox, name=Proof]{replacementproof}
+    \renewenvironment{proof}[1][\proofname]{\vspace{-10pt}\begin{replacementproof}}{\end{replacementproof}}
+
+    \declaretheorem[style=thmexplanationbox, name=Proof]{tmpexplanation}
+    \newenvironment{explanation}[1][]{\vspace{-10pt}\begin{tmpexplanation}}{\end{tmpexplanation}}
+}
+
+% -- use for vietnamese --
+\declaretheorem[style=thmgreenbox, name=Định nghĩa]{defivn}
+\declaretheorem[style=thmbluebox, numbered=no, name=Ví dụ]{egvn}
+\declaretheorem[style=thmbluebox, numbered=no, name=Bài tập]{exvn}
+\declaretheorem[style=thmredbox, name=Mệnh đề]{propvn}
+\declaretheorem[style=thmredbox, name=Định lý]{theovn}
+\declaretheorem[style=thmredbox, name=Bổ đề]{lemmavn}
+\declaretheorem[style=thmredbox, numbered=no, name=Hệ quả]{corollaryvn}
+\declaretheorem[style=thmblueline, numbered=no, name=Nhận xét]{remarkvn}
+
+\declaretheorem[style=thmexplanationbox, name=Giải]{replacementsolvevn}
+\newenvironment{solvevn}[1][\proofname]{\vspace{-10pt}\begin{replacementsolvevn}}{\end{replacementsolvevn}}
+
+\@ifclasswith{article}{nocolor}{
+    \declaretheorem[style=thmproofbox, name=Chứng minh]{replacementproofvn}
+    \newenvironment{proofvn}[1][\proofname]{\begin{replacementproofvn}}{\end{replacementproofvn}}
+}{
+    \declaretheorem[style=thmproofbox, name=Chứng minh]{replacementproofvn}
+    \newenvironment{proofvn}[1][\proofname]{\vspace{-10pt}\begin{replacementproofvn}}{\end{replacementproofvn}}
+}
+
+\newtheorem*{probvn}{Bài toán}
+% ------------------------
+\makeatother
+
+\declaretheorem[style=thmblueline, numbered=no, name=Remark]{remark}
+\declaretheorem[style=thmblueline, numbered=no, name=Note]{note}
+
+\newtheorem*{uovt}{UOVT}
+\newtheorem*{notation}{Notation}
+\newtheorem*{previouslyseen}{As previously seen}
+\newtheorem*{problem}{Problem}
+\newtheorem*{observe}{Observe}
+\newtheorem*{property}{Property}
+\newtheorem*{intuition}{Intuition}
+
+% -- section --
+%\renewcommand{\thesection}{\Roman{section}}
+%\renewcommand{\thesubsection}{\arabic{subsection}}
+% \newcommand{\nchapter}[2]{%
+%     \setcounter{chapter}{#1}%
+%     \addtocounter{chapter}{-1}%
+%     \chapter{#2}
+% }
+% \newcommand{\nsection}[3]{%
+%     \setcounter{chapter}{#1}%
+%     \setcounter{section}{#2}%
+%     \addtocounter{section}{-1}%
+%     \section{#3}
+% }
+
+% -- create header and footer line --
+\usepackage{fancyhdr,graphicx,lastpage}
+\fancypagestyle{plain}{
+  \fancyhf{}% Clear header/footer
+  \fancyhead[L]{Đại học Khoa học Tự Nhiên, ĐHQG-HCM}% Right header
+  \fancyhead[R]{Khoa: Toán - Tin học}
+  \fancyfoot[L]{Môn: Chuyên đề giải tích số}% Left footer
+  \fancyfoot[R]{Trang: \thepage\  / \pageref{LastPage}}% Right footer
+}
+\pagestyle{plain}% Set page style to plain.
+\renewcommand{\footrulewidth}{1pt}
+
+%http://tex.stackexchange.com/questions/76273/multiple-pdfs-with-page-group-included-in-a-single-page-warning
+\pdfsuppresswarningpagegroup=1
+
+% -- url --
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    urlcolor=cyan,
+    linkcolor=purple,
+}
+
+% -- something ese --
+\usepackage{faktor}
+
+\makeatletter
+\DeclareRobustCommand*{\mfaktor}[3][]
+{
+   { \mathpalette{\mfaktor@impl@}{{#1}{#2}{#3}} }
+}
+\newcommand*{\mfaktor@impl@}[2]{\mfaktor@impl#1#2}
+\newcommand*{\mfaktor@impl}[4]{
+   \settoheight{\faktor@zaehlerhoehe}{\ensuremath{#1#2{#3}}}%
+   \settoheight{\faktor@nennerhoehe}{\ensuremath{#1#2{#4}}}%
+      \raisebox{-0.5\faktor@zaehlerhoehe}{\ensuremath{#1#2{#3}}}%
+      \mkern-4mu\diagdown\mkern-5mu%
+      \raisebox{0.5\faktor@nennerhoehe}{\ensuremath{#1#2{#4}}}%
+}
+\makeatother
+
+\usepackage{titlesec}
+
+\usepackage{glossaries}
+
+% -- icon support --
+\usepackage{fontawesome5} 
+
+% \usepackage{kbordermatrix}
+% \renewcommand{\kbldelim}{(}
+% \renewcommand{\kbrdelim}{)}
+
+\usepackage{array}
+
+\setcounter{tocdepth}{3} % Include subsubsections in the table of contents

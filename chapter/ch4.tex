@@ -1,0 +1,306 @@
+\section{Các phương pháp thể tích hữu hạn}
+\subsection{Phương pháp thể tích hữu hạn của định luật bảo toàn}
+Trước tiên, ta có dạng tổng quát của phương trình Euler cho trường hợp một chiều như sau:
+\[
+w_t + f(w)_x = 0.
+\]
+Ta có thể diễn đạt hệ phương trình này thành các phương trình khác nhau tương ứng với:
+\begin{itemize}
+    \item \textbf{Bảo toàn khối lượng:}
+    \[
+    \dfrac{\partial \rho}{\partial t} + \dfrac{\partial (\rho u)}{\partial x} = 0.
+    \]
+    \item \textbf{Bảo toàn động lượng:}
+    \[
+    \dfrac{\partial (\rho u)}{\partial t} + \dfrac{\partial (\rho u^2 + p)}{\partial x} = 0.
+    \]
+    \item \textbf{Bảo toàn năng lượng:}
+    \[
+    \dfrac{\partial E}{\partial t} + \dfrac{\partial (u(E + p))}{\partial x} = 0.
+    \]
+\end{itemize}
+
+Ta xét hệ phương trình trên trên một miền tính toán là $\Omega = \{(x, t) : 0 \leq t \leq t_{\text{final}}, a(t) \leq x \leq b(t) \}$, với $t_{\text{final}}$ là thời điểm cuối cùng mà ta muốn khảo sát, $a(t)$, $b(t)$ là biên của miền tính toán, thỏa điều kiện đầu $u(x, 0) = u_0(x)$.
+
+Ta chia nhỏ đoạn $[a, b]$ thành $N$ đoạn nhỏ hơn, ký hiệu đoạn con thứ $i$ là $[x_{i - 1/2}, x_{i + 1/2}]$, $i = \overline{1, ..., N}$. Tiếp theo, ta sẽ rời rạc hóa thời gian như sau: với giá trị $\Delta t$ cố định, ta chia nhỏ đoạn $[0, t_{\text{final}}]$ thành các đoạn nhỏ hơn với khoảng cách là $\Delta t$. Khi đó, miền $\Omega$ ban đầu sẽ được phân hoạch thành các miền nhỏ hơn: $[x_{i - 1/2}, x_{i + 1/2}] \times [t^n, t^{n+1}]$ ($t^n$ là mốc thời gian thứ $n$ khi chia nhỏ miền thời gian - xem ảnh minh họa bên dưới).
+
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.2]
+    % Draw axes
+    \draw[->] (0,0) -- (6,0) node[right] {$x$};
+    \draw[->] (0,0) -- (0,4) node[above] {$t$};
+    
+    % Draw the domain cell with solid lines
+    \draw[thick] (2,1.5) rectangle (4,2.5);
+    
+    % Dashed lines from axes to domain cell
+    \draw[dashed] (2,0) -- (2,1.5);
+    \draw[dashed] (4,0) -- (4,1.5);
+    \draw[dashed] (0,1.5) -- (2,1.5);
+    \draw[dashed] (0,2.5) -- (2,2.5);
+    
+    % Tick marks on x-axis
+    \draw (2,0) -- (2,-0.1);
+    \draw (4,0) -- (4,-0.1);
+    
+    % Tick marks on t-axis
+    \draw (0,1.5) -- (-0.1,1.5);
+    \draw (0,2.5) -- (-0.1,2.5);
+    
+    % x-axis labels
+    \node[below] at (2,0) {$x_{i-1/2}$};
+    \node[below] at (4,0) {$x_{i+1/2}$};
+    
+    % t-axis labels
+    \node[left] at (0,1.5) {$t^n$};
+    \node[left] at (0,2.5) {$t^{n+1}$};
+    
+    % Arrow pointing to the domain with label outside
+    \draw[->] (5,3) -- (3.5,2.2);
+    \node[right] at (5,3) {$[x_{i-1/2}, x_{i+1/2}] \times [t^n, t^{n+1}]$};
+    
+\end{tikzpicture}
+\caption{Rời rạc hóa miền tính toán $\Omega$ thành các miền con}
+\label{fig:domain_discretization}
+\end{figure}
+
+Lấy tích phân của phương trình Euler trên miền $[x_{i - 1/2}, x_{i + 1/2}] \times [t^n, t^{n+1}]$, ta có:
+\begin{equation*}
+    \begin{aligned}
+        &\int_{t_n}^{t_{n+1}} \int_{x_{i-1/2}}^{x_{i+1/2}} \left( \frac{\partial w}{\partial t} + \frac{\partial f(w)}{\partial x} \right) dx \, dt = 0 \\
+        \Leftrightarrow & \int_{t_n}^{t_{n+1}} \left( \int_{x_{i-1/2}}^{x_{i+1/2}}\frac{\partial w}{\partial t} dx \right) dt + \int_{t_n}^{t_{n+1}} \left( \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w)}{\partial x} dx \right) dt = 0 \\
+        \Leftrightarrow &\int_{x_{i-1/2}}^{x_{i+1/2}} \left( \int_{t_n}^{t_{n+1}} \frac{\partial w}{\partial t} dt \right) dx + \int_{t_n}^{t_{n+1}} \left( \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w)}{\partial x} dx \right) dt = 0.
+    \end{aligned}
+\end{equation*}
+Áp dụng Định lý cơ bản của giải tích (Newton-Leibniz):
+\begin{itemize}
+    \item Với biến thời gian $t$:
+    $$ \int_{t_n}^{t_{n+1}} \frac{\partial w(x,t)}{\partial t} dt = w(x, t_{n+1}) - w(x, t_n) $$
+    \item Với biến không gian $x$:
+    $$ \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w(x,t))}{\partial x} dx = f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) $$
+\end{itemize}
+Thay kết quả trên vào phương trình tích phân ban đầu, ta thu được phương trình cân bằng trên miền con $[x_{i - 1/2}, x_{i + 1/2}] \times [t^n, t^{n+1}]$:
+\begin{equation*}
+    \begin{aligned}
+        &\int_{x_{i-1/2}}^{x_{i+1/2}} \left( \int_{t_n}^{t_{n+1}} \frac{\partial w}{\partial t} dt \right) dx + \int_{t_n}^{t_{n+1}} \left( \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w)}{\partial x} dx \right) dt = 0 \\
+       \Leftrightarrow &\int_{x_{i-1/2}}^{x_{i+1/2}} \left( w(x, t_{n+1}) - w(x, t_n)\right) dx + \int_{t_n}^{t_{n+1}} \left( f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t))\right) dt = 0 \\
+        \Leftrightarrow &\int_{x_{i-1/2}}^{x_{i+1/2}} w(x, t_{n+1}) dx - \int_{x_{i-1/2}}^{x_{i+1/2}} w(x, t_n) dx + \int_{t_n}^{t_{n+1}} f(w(x_{i+1/2}, t)) dt - \int_{t_n}^{t_{n+1}} f(w(x_{i-1/2}, t)) dt = 0
+    \end{aligned}
+\end{equation*}
+
+Ta áp dụng các ký hiệu:
+\[
+[W]_i^n = \dfrac{1}{\Delta x_i}\int_{x_{i-1/2}}^{x_{i+1/2}} w(x, t_n) dx, \quad F_{i+1/2} = \dfrac{1}{\Delta t}\int_{t_n}^{t_{n+1}} f(w(x_{i+1/2}, t)) dt
+\]
+với $\Delta x_i = x_{i+1/2} - x_{i-1/2}$ và $\Delta t = t^{n+1} - t^n$. Bằng cách ký hiệu tương tự cho $[W]_i^{n+1}$ và $F_{i-1/2}$, ta có:
+$$
+\Delta x_i [W]_i^{n+1} - \Delta x_i [W]_i^n + \Delta t F_{i+1/2} - \Delta t F_{i-1/2} = 0.
+$$
+
+Chia cả hai vế phương trình cho $\Delta x_i$, ta thu được:
+\begin{equation*}
+    [W]_i^{n+1} = [W]_i^n - \frac{\Delta t}{\Delta x_i} \left( F_{i+1/2} - F_{i-1/2} \right).
+\end{equation*}
+
+Giả sử giá trị của $F^n_{i+1/2}$ chỉ phụ thuộc vào các giá trị của $W_i^n$ và $W_{i+1}^{n}$, khi đó ta có thể xấp xỉ $F^n_{i+1/2}$ như sau:
+
+\[
+F^n_{i+1/2} \approx \mathcal{F} (W_i^n, W^n_{i+1}).
+\]
+Bằng cách xấp xỉ tương tự cho $F^n_{i-1/2}$, ta có kết quả sau:
+\[
+[W]_i^{n+1} = [W]_i^n - \frac{\Delta t}{\Delta x_i} \left( \mathcal{F} (W_i^n, W^n_{i+1}) - \mathcal{F} (W_{i-1}^n, W^n_{i})\right).
+\]
+
+Cách xấp xỉ như trên làm cho $W_i^{n+1}$ chỉ phụ thuộc vào $W_{i-1}^{n}, W_i^{n}$ và $W_{i+1}^{n}$, do đó ta gọi nó là phương pháp three-point stencil. Với mỗi cách chọn $\mathcal{F}$, ta có được một phương pháp số cho phương trình Euler.
+
+Ta chọn $F^n_{i+1/2} \approx \mathcal{F} (W_i^n, W^n_{i+1}) = \dfrac{1}{2}(f(W_i^n) + f(W_{i+1}^n))$, khi đó phương trình cập nhật trở thành:
+\begin{align*}
+    W_i^{n+1} &= W_i^n - \frac{\Delta t}{\Delta x} \left[ \underbrace{\frac{1}{2}(f(W_i^n) + f(W_{i+1}^n))}_{F_{i+1/2}} - \underbrace{\frac{1}{2}(f(W_{i-1}^n) + f(W_i^n))}_{F_{i-1/2}} \right] \\
+    &= W_i^n - \frac{\Delta t}{2\Delta x} \left[ f(W_i^n) + f(W_{i+1}^n) - f(W_{i-1}^n) - f(W_i^n) \right]
+\end{align*}
+Các số hạng chứa $f(W_i^n)$ triệt tiêu lẫn nhau, ta thu được phương trình sai phân trung tâm (Central Difference Scheme):
+\begin{equation*}
+    W_i^{n+1} = W_i^n - \frac{\Delta t}{2\Delta x} \left( f(W_{i+1}^n) - f(W_{i-1}^n) \right).
+\end{equation*}
+\textbf{Nhận xét:} Mặc dù phương pháp này đơn giản và trực quan, nhưng nó được chứng minh là \textbf{không ổn định (unstable)} đối với các bài toán hyperbolic (như hệ phương trình Euler) nếu không kèm theo các điều kiện rất nghiêm ngặt. Do đó, ta cần sử dụng phương pháp thay thế ổn định hơn, đó là phương pháp Lax-Friedrichs.
+\subsection{Phương pháp Lax-Friedrich và local Lax-Friedrich}
+\subsubsection{Lax-Friedrich}
+Phương pháp Lax-Friedrich là một trong những phương pháp đơn giản nhất để giải hệ phương trình Euler. Bằng cách thay đổi $W_i^n = \dfrac{W_{i+1}^n + W_{i-1}^n}{2}$ vào phương trình sai phân trung tâm, ta có được phương pháp Lax-Friedrich:
+\[
+W_i^{n+1} = \dfrac{W_{i-1}^n + W_{i+1}^n}{2} - \frac{\Delta t}{2\Delta x} \left( f(W_{i+1}^n) - f(W_{i-1}^n) \right).
+\]
+
+Dưới đây là kết quả áp dụng phương pháp Lax-Friedrich cho bài toán ống sốc Sod:
+
+\input{figure/lf_results}
+\subsubsection{Phương pháp local Lax-Friedrich}
+
+Phương pháp local Lax-Friedrich (LLF) là phương pháp cải tiến cho Lax-Friedrich. Phương pháp này hoạt động bằng cách thay thế giá trị $\dfrac{\Delta t}{\Delta x}$ bằng một giá trị cục bộ $\alpha$. Thành phần được thêm vào này được gọi là vận tốc truyền sóng cực đại (Maximum Local Wave Speed):
+\[
+F_{i+1/2}^{LLF}(W_-, W_+) = \frac{1}{2} \left( f(W_-) + f(W_+) \right) - \dfrac{\alpha_{1/2}}{2} \left( W_+ - W_- \right).
+\]
+Hệ số $\alpha_{i+1/2}$ được tính bằng công thức
+\[
+\alpha_{i+1/2} = \max \left( |f'(W_i)|, |f'(W_{i+1})| \right)
+\]
+đối với phương trình vô hướng, còn đối với phương trình Euler thì ta có:
+\[
+\alpha_{i+1/2} = \max \left( |\lambda(A(W_i))|, |\lambda(A(W_{i+1}))| \right)
+\]
+
+\textbf{Ghi chú:}
+Trong công thức tính bên trên, $A(W) = \frac{\partial f}{\partial W}$ là ma trận Jacobian của hệ phương trình. Các trị riêng $\lambda$ (eigenvalues) của ma trận này đại diện cho các vận tốc truyền sóng đặc trưng trong dòng chảy.
+Đối với hệ phương trình Euler 1 chiều, ba trị riêng này lần lượt là $u-c$, $u$, và $u+c$ (trong đó $u$ là vận tốc dòng chảy và $c$ là vận tốc âm thanh). Do đó, để đảm bảo tính ổn định, hệ số $\alpha$ thực tế thường được tính bằng vận tốc sóng lớn nhất về mặt trị tuyệt đối:
+\begin{equation*}
+    \alpha_{i+1/2} = \max \left( |u_i| + c_i, |u_{i+1}| + c_{i+1} \right)
+\end{equation*}
+
+Dưới đây là kết quả áp dụng phương pháp Local Lax-Friedrich cho bài toán ống sốc Sod:
+
+\input{figure/llf_results}
+
+\subsection{Phương pháp bậc 2 cho không gian - Piecewise linear construction}
+Phương pháp LLF ở trên cho ta sai số bậc một theo không gian, vì nó dựa trên việc tái cấu trúc từng đoạn bằng hằng số. Cụ thể hơn, trong công thức
+\begin{equation*}
+\begin{aligned}
+    F_{i+1/2} &= \mathcal{F}(W_{i+1/2}^-, W_{i+1/2}^+) \\
+    &= \frac{1}{2} \left( f(W_{i+1/2}^-) + f(W_{i+1/2}^+) \right) - \frac{\alpha_{i+1/2}}{2} (W_{i+1/2}^+ - W_{i+1/2}^-),
+\end{aligned}
+\end{equation*}
+đối với LLF thì ta có $W_{i+1/2}^- = W_i, W_{i+1/2}^+ = W_{i+1}$.
+
+Để tăng độ chính xác lên bậc 2 theo không gian, thay vì để $W_{i+1/2}^-$ và $W_{i+1/2}^+$ như trên, ta sẽ dùng các công thức sau:
+\[
+W_{i+1/2}^- = W_i + W_i' \frac{\Delta x}{2}, \quad W_{i+1/2}^+ = W_{i+1} - W_{i+1}' \frac{\Delta x}{2}.
+\]
+Phương pháp này được gọi là piecewise linear construction.
+Trong công thức, $W_i'$ là đạo hàm tại $x_i$, tuy nhiên có thể được thay thế bởi một công thức tính toán phù hợp (do đạo hàm rất khó tính). Cách đơn giản nhất là dùng hàm minmod với hai tham số:
+\[
+W'_i = \frac{1}{\Delta x}\text{minmod}(W_i - W_{i-1}, W_{i+1} - W_i).
+\]
+Với hàm minmod được cho bởi
+\begin{equation*}
+    \begin{split}
+    \text{minmod(a, b)} &= \begin{cases}
+        a & \text{if } ab > 0, |a| \le |b|, \\
+        b & \text{if } ab > 0, |b| < |a|, \\
+        0 & \text{if } ab \le 0.
+    \end{cases} \\
+    % & = \frac{1}{2}(\sgn(a) + \sgn(b)) \min(|a|, |b|).
+\end{split}
+\end{equation*}
+hoặc công thức rút gọn
+\[
+\text{minmod(a, b)} = \dfrac{1}{2}(\text{sgn}(a) + \text{sgn}(b)) \min(|a|, |b|).
+\]
+
+Bên cạnh công thức minmod cho hai tham số như trên thì ta cũng có thể dùng công thức minmod cho ba tham số:
+\[
+W'_i = \text{minmod3}\left(\frac{\theta(W_{i+1} - W_i)}{\Delta x}, \frac{(W_{i+1} - W_{i-1})}{2\Delta x}, \frac{\theta(W_i - W_{i-1})}{\Delta x}\right).
+\]
+và công thức minmod3 được cho bởi
+\begin{equation*}
+    \text{minmod3}(a, b, c) = \begin{cases}
+        \min(|a|, |b|, |c|)\text{sign}(a) & \text{nếu } a, b, c \text{ cùng dấu}, \\
+        0 & \text{nếu } a, b, c \text{ khác dấu}.
+    \end{cases}
+\end{equation*}
+
+Dưới đây là kết quả áp dụng phương pháp bậc 2 không gian cho bài toán ống sốc Sod:
+
+\input{figure/spatial2_results}
+
+\subsection{Phương pháp bậc 2 theo thời gian - Công thức Heun}
+
+\subsubsection{Biến đổi phương trình về dạng ODE}
+Xét phương trình Euler 1 chiều:
+\begin{equation*}
+    w_t + f(w)_x = 0
+\end{equation*}
+trong đó: 
+\[
+w = \begin{pmatrix}
+    \rho \\ \rho u \\ E
+\end{pmatrix}, \quad f(w) = \begin{pmatrix}
+    \rho u \\ \rho u^2 + p \\ (E + p)u
+\end{pmatrix}.
+\]
+Trước tiên, ta lấy tích phân phương trình ban đầu trên đoạn $[x_{i-\frac{1}{2}}, x_{i+\frac{1}{2}}]$:
+\[
+\int_{x_{i-1/2}}^{x_{i+1/2}} \left( \frac{\partial w}{\partial t} + \frac{\partial f(w)}{\partial x} \right) dx = 0, \quad \text{hay} \quad \int_{x_{i-1/2}}^{x_{i+1/2}}  \frac{\partial w}{\partial t} dx + \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w)}{\partial x}  dx = 0
+\]
+Áp dụng quy tắc Leibniz cho số hạng đầu tiên và định lý cơ bản của giải tích cho số hạng thứ hai:
+\begin{align*}
+        \int_{x_{i-1/2}}^{x_{i+1/2}}  \frac{\partial w}{\partial t} dx &= \frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx, \\
+        \int_{x_{i-1/2}}^{x_{i+1/2}} \frac{\partial f(w)}{\partial x}  dx &= \left[ f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) \right].
+\end{align*}
+Suy ra:
+\[
+\frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx + \left[ f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) \right] = 0.
+\]
+Chia hai vế của phương trình trên cho $\Delta x$:
+\[
+\frac{1}{\Delta x}\frac{d}{dt} \int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx + \frac{1}{\Delta x}\left[ f(w(x_{i+1/2}, t)) - f(w(x_{i-1/2}, t)) \right] = 0.
+\]
+Đặt giá trị trung bình trên ô (cell average) và các thông lượng số (numerical flux):
+\[
+\langle w \rangle_i = \frac{1}{\Delta x}\int_{x_{i-1/2}}^{x_{i+1/2}} w(x,t) \, dx, \quad F_{i+1/2} \approx f(w(x_{i+1/2}, t)), \quad F_{i-1/2} \approx f(w(x_{i-1/2}, t)).
+\]
+Cuối cùng ta thu được phương trình:
+\[
+\frac{d\langle w \rangle_i}{dt} = - \frac{F_{i+1/2} - F_{i-1/2}}{\Delta x} =: \mathcal{F}_i(w).
+\]
+Hệ phương trình thu được sau cùng là hệ ODE và có thể được tính xấp xỉ nghiệm bằng cách dùng phương pháp số cho phương trình vi phân. Trong bài này, ta sẽ dùng công thức Heun để đạt được sai số bậc 2 về mặt thời gian.
+
+\subsubsection{Áp dụng công thức Heun}
+Công thức lặp tổng quát của phương pháp Heun để tìm nghiệm xấp xỉ $y_{i+1}$ tại bước $x_{i+1} = x_i + h$ (với $h$ là bước nhảy thời gian) được xác định như sau:
+\begin{equation*}
+    y_{i+1} = y_i + \frac{h}{2} \left[ f(x_i, y_i) + f\Big(x_i + h, \, y_i + h f(x_i, y_i)\Big)\right]
+\end{equation*}
+Trong đó, công thức có thể được diễn giải qua hai giai đoạn (Dự báo - Hiệu chỉnh):
+\begin{align*}
+    \text{Dự báo (Predictor):} & \quad \tilde{y}_{i+1} = y_i + h f(x_i, y_i) \\
+    \text{Hiệu chỉnh (Corrector):} & \quad y_{i+1} = y_i + \frac{h}{2} \left[ f(x_i, y_i) + f(x_{i+1}, \tilde{y}_{i+1}) \right]
+\end{align*}
+
+\noindent Để áp dụng công thức này vào bài toán, trước tiên ta sẽ "lắp ghép" các vector biến bảo toàn $W_i (\approx \langle w \rangle_i)$ và vector tốc độ biến thiên $\mathcal{F}_i$ thành các Vector trạng thái toàn cục $W$ và $\mathcal{F}$, khi đó ta có hệ:
+\[
+\dfrac{dW}{dt} = \mathcal{F}(W).
+\]
+Áp dụng công thức Heun với bước thời gian $\Delta t$, ta có công thức cập nhật nghiệm:
+\[
+W^{n+1} = W^n + \frac{\Delta t}{2} \left[ \mathcal{F}(W^n) + \mathcal{F}\Big(W^n + \Delta t \mathcal{F}(W^n)\Big)\right].
+\]
+Cụ thể hơn, thuật toán được thực hiện qua 4 bước:
+\begin{enumerate}
+    \item Bước 1 (Tính độ dốc ban đầu):
+    Tính toán vector thay đổi dựa trên trạng thái hiện tại $W^n$:
+    \begin{equation*}
+        K_1 = \mathcal{F}(W^n)
+    \end{equation*}
+
+    \item Bước 2 (Dự báo - Predictor):
+    Ước lượng nghiệm trung gian $W^*$ (nghiệm dự báo) bằng phương pháp Euler thuận:
+    \begin{equation*}
+        W^* = W^n + \Delta t K_1
+    \end{equation*}
+
+    \item Bước 3 (Tính độ dốc tại điểm dự báo):
+    Tính toán vector thay đổi dựa trên trạng thái dự báo $W^*$:
+    \begin{equation*}
+        K_2 = \mathcal{F}(W^*)
+    \end{equation*}
+
+    \item Bước 4 (Hiệu chỉnh - Corrector):
+    Cập nhật nghiệm chính thức tại bước thời gian mới $n+1$ bằng trung bình cộng của hai độ dốc:
+    \begin{equation*}
+        W^{n+1} = W^n + \frac{\Delta t}{2} (K_1 + K_2)
+    \end{equation*}
+\end{enumerate}
+
+Dưới đây là kết quả áp dụng phương pháp bậc 2 thời gian cho bài toán ống sốc Sod:
+
+\input{figure/temporal2_results}

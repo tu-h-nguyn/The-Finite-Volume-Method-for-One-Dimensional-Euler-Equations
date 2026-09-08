@@ -1,0 +1,54 @@
+\section*{Kết luận}
+\addcontentsline{toc}{section}{Kết luận}
+
+Chúng em trình bày một cách hệ thống các phương pháp thể tích hữu hạn để giải hệ phương trình Euler một chiều, từ những phương pháp cơ bản đến các phương pháp cải tiến với độ chính xác cao hơn.
+
+\subsection{Những kết quả đạt được}
+
+Qua quá trình nghiên cứu và thực hiện, đã đạt được những kết quả chính sau:
+
+\begin{itemize}
+    \item \textbf{Xây dựng cơ sở lý thuyết vững chắc:} Trình bày chi tiết hệ phương trình Euler, các tính chất toán học và vật lý của hệ phương trình hyperbolic.
+    
+    \item \textbf{Phát triển các phương pháp số:} Cài đặt thành công các phương pháp thể tích hữu hạn bằng matlab:
+    \begin{itemize}
+        \item Phương pháp Lax-Friedrich cơ bản
+        \item Phương pháp Local Lax-Friedrich cải tiến
+        \item Phương pháp bậc 2 theo không gian (Piecewise linear construction)
+        \item Phương pháp bậc 2 theo thời gian (Công thức Heun)
+    \end{itemize}
+    
+    \item \textbf{Kiểm nghiệm và so sánh:} Áp dụng các phương pháp vào bài toán ống sốc Sod cổ điển và so sánh kết quả với nghiệm chính xác, đánh giá độ chính xác và hiệu quả của từng phương pháp.
+    
+    \item \textbf{Phân tích ưu nhược điểm:} Chỉ ra rằng phương pháp bậc cao cho kết quả chính xác hơn nhưng đòi hỏi chi phí tính toán lớn hơn.
+\end{itemize}
+
+\subsection{Đánh giá và nhận xét}
+
+Các phương pháp thể tích hữu hạn cho thấy:
+
+\begin{itemize}
+    \item Phương pháp Lax-Friedrich đơn giản, ổn định nhưng có độ chính xác thấp do tính khuếch tán số cao.
+    
+    \item Phương pháp Local Lax-Friedrich cải thiện đáng kể độ chính xác bằng cách sử dụng vận tốc truyền sóng cục bộ.
+    
+    \item Các phương pháp bậc cao (bậc 2 theo không gian và thời gian) cho kết quả chính xác hơn, đặc biệt trong việc bắt các đặc trưng của sóng sốc và sóng giãn nở.
+    
+    \item Việc kết hợp cả hai cải tiến (bậc 2 không gian và thời gian) cho kết quả tốt nhất trong các phương pháp đã khảo sát.
+\end{itemize}
+
+\subsection{Hướng phát triển}
+
+Từ kết quả như trên, một số hướng phát triển tiếp theo có thể được đề xuất:
+
+\begin{itemize}
+    \item Mở rộng nghiên cứu sang các phương pháp bậc cao hơn (bậc 3, bậc 4) như WENO, DG.
+    
+    \item Áp dụng các phương pháp đã nghiên cứu cho bài toán đa chiều (2D, 3D).
+    
+    \item Nghiên cứu các kỹ thuật thích ứng lưới (adaptive mesh refinement) để tối ưu hóa hiệu quả tính toán.
+    
+    \item Phát triển các phương pháp song song hóa để giải quyết các bài toán quy mô lớn.
+    
+    \item Ứng dụng vào các bài toán thực tế trong kỹ thuật như động lực học khí, thiết kế máy bay, mô phỏng vụ nổ.
+\end{itemize}

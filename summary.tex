@@ -1,0 +1,52 @@
+\chapter*{Kết luận}
+\addcontentsline{toc}{chapter}{Kết luận}
+
+Tiểu luận đã khảo sát một cách có hệ thống các phương pháp thể tích hữu hạn để giải hệ phương trình Euler một chiều. Từ phương pháp Lax-Friedrich cơ bản đến các phương pháp bậc cao hơn, mỗi phương pháp đều được phân tích về mặt lý thuyết và kiểm nghiệm thông qua bài toán ống sốc Sod.
+
+\section*{Tổng kết nội dung}
+
+Các nội dung chính đã được trình bày bao gồm:
+
+\begin{itemize}
+    \item \textbf{Cơ sở lý thuyết:} Hệ phương trình Euler được thiết lập từ các định luật bảo toàn cơ bản trong cơ học chất lưu. Tính chất hyperbolic của hệ phương trình tạo ra các hiện tượng sóng đặc trưng như sóng sốc và sóng giãn nở.
+    
+    \item \textbf{Phương pháp thể tích hữu hạn:} Xuất phát từ dạng tích phân của định luật bảo toàn, các phương pháp được xây dựng dựa trên việc rời rạc hóa miền tính toán và xấp xỉ thông lượng tại các mặt phân tử:
+    \begin{itemize}
+        \item Phương pháp Lax-Friedrich với tính ổn định cao nhưng khuếch tán số lớn
+        \item Phương pháp Local Lax-Friedrich cải thiện độ chính xác thông qua vận tốc truyền sóng cục bộ
+        \item Phương pháp bậc 2 không gian sử dụng tái cấu trúc tuyến tính từng đoạn
+        \item Phương pháp bậc 2 thời gian áp dụng công thức Heun
+    \end{itemize}
+    
+    \item \textbf{Kiểm nghiệm số:} Bài toán ống sốc Sod được sử dụng làm benchmark để đánh giá hiệu quả của các phương pháp. Kết quả cho thấy sự cân bằng giữa độ chính xác và chi phí tính toán.
+\end{itemize}
+
+\section*{Nhận xét về các phương pháp}
+
+Qua quá trình phân tích và so sánh, ta có thể rút ra một số nhận xét:
+
+\begin{itemize}
+    \item Phương pháp Lax-Friedrich, mặc dù đơn giản và ổn định, nhưng tính khuếch tán số cao làm giảm độ phân giải của các đặc trưng sóng.
+    
+    \item Phương pháp Local Lax-Friedrich khắc phục một phần hạn chế trên bằng cách sử dụng thông tin cục bộ về vận tốc truyền sóng.
+    
+    \item Các phương pháp bậc cao (bậc 2 không gian và thời gian) cho độ chính xác tốt hơn đáng kể, đặc biệt trong việc bắt các cấu trúc sóng phức tạp.
+    
+    \item Sự kết hợp giữa cải tiến bậc 2 theo cả không gian và thời gian mang lại kết quả tối ưu trong phạm vi các phương pháp được khảo sát.
+\end{itemize}
+
+\section*{Định hướng nghiên cứu tiếp theo}
+
+Dựa trên kết quả thu được, một số hướng nghiên cứu tiếp theo có thể được xem xét:
+
+\begin{itemize}
+    \item Nghiên cứu các phương pháp bậc cao hơn như WENO (Weighted Essentially Non-Oscillatory) hoặc Discontinuous Galerkin để đạt độ chính xác cao hơn.
+    
+    \item Mở rộng sang bài toán đa chiều với các thách thức về tính toán và lưu trữ dữ liệu.
+    
+    \item Phát triển các kỹ thuật thích ứng lưới để tối ưu hóa tài nguyên tính toán.
+    
+    \item Ứng dụng vào các bài toán thực tế trong công nghiệp như thiết kế khí động học, mô phỏng cháy nổ.
+\end{itemize}
+
+Tiểu luận đã hoàn thành việc khảo sát và so sánh các phương pháp thể tích hữu hạn cơ bản cho hệ phương trình Euler một chiều, tạo cơ sở cho các nghiên cứu chuyên sâu hơn trong lĩnh vực tính toán khoa học.
