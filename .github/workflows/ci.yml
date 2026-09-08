@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: tests (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install
+        run: python -m pip install -e ".[dev]"
+      - name: Lint
+        run: python -m ruff check .
+      - name: Test
+        run: python -m pytest --cov=euler1d --cov-report=term-missing
+
+  figures:
+    name: results are reproducible
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: python -m pip install -e ".[dev]"
+      - name: Regenerate figures and tables
+        run: python scripts/generate_results.py
+      - name: Fail if the committed numbers are stale
+        run: git diff --exit-code -- docs/RESULTS.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: figures
+          path: docs/figures/*.png
