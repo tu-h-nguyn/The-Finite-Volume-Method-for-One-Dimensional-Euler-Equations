@@ -82,7 +82,7 @@ function riemann_exact_solution()
     title('Exact Density Distribution');
     legend('Exact Solution', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/density_exact.tex');
+    matlab2tikz('../report/figure/density_exact.tex');
     
     % Velocity plot
     figure('Position', [100, 100, 400, 300]);
@@ -93,7 +93,7 @@ function riemann_exact_solution()
     title('Exact Velocity Distribution');
     legend('Exact Solution', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/velocity_exact.tex');
+    matlab2tikz('../report/figure/velocity_exact.tex');
     
     % Pressure plot
     figure('Position', [100, 100, 400, 300]);
@@ -104,7 +104,7 @@ function riemann_exact_solution()
     title('Exact Pressure Distribution');
     legend('Exact Solution', 'Location', 'best');
     grid on;
-    matlab2tikz('../figure/pressure_exact.tex');
+    matlab2tikz('../report/figure/pressure_exact.tex');
     
     % Combined plot with all 4 subplots
     figure('Position', [100, 100, 800, 800]);
