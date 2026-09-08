@@ -13,7 +13,8 @@ Two families are provided:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from typing import Any
 
 import numpy as np
 
@@ -50,17 +51,18 @@ class RiemannProblem:
         t = self.t_final if t is None else t
         return exact_solution(x, t, self.left, self.right, self.gamma, self.x0)
 
-    def config(self, **overrides) -> SolverConfig:
+    def config(self, **overrides: Any) -> SolverConfig:
         """A :class:`~euler1d.solver.SolverConfig` matching this problem."""
-        base = dict(
-            x_min=self.x_min,
-            x_max=self.x_max,
-            t_final=self.t_final,
-            gamma=self.gamma,
-            boundary=self.boundary,
+        return replace(
+            SolverConfig(
+                x_min=self.x_min,
+                x_max=self.x_max,
+                t_final=self.t_final,
+                gamma=self.gamma,
+                boundary=self.boundary,
+            ),
+            **overrides,
         )
-        base.update(overrides)
-        return SolverConfig(**base)
 
 
 @dataclass(frozen=True)
@@ -103,16 +105,18 @@ class SmoothDensityWave:
         rho = self._density(shifted)
         return rho, np.full_like(rho, self.u0), np.full_like(rho, self.p0)
 
-    def config(self, **overrides) -> SolverConfig:
-        base = dict(
-            x_min=self.x_min,
-            x_max=self.x_max,
-            t_final=self.t_final,
-            gamma=self.gamma,
-            boundary=self.boundary,
+    def config(self, **overrides: Any) -> SolverConfig:
+        """A :class:`~euler1d.solver.SolverConfig` matching this problem."""
+        return replace(
+            SolverConfig(
+                x_min=self.x_min,
+                x_max=self.x_max,
+                t_final=self.t_final,
+                gamma=self.gamma,
+                boundary=self.boundary,
+            ),
+            **overrides,
         )
-        base.update(overrides)
-        return SolverConfig(**base)
 
 
 PROBLEMS: dict[str, RiemannProblem | SmoothDensityWave] = {

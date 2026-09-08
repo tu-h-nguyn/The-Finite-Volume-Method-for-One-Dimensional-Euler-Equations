@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import matplotlib
 
@@ -15,7 +16,9 @@ from .solver import Solution  # noqa: E402
 
 __all__ = ["plot_solution_comparison", "plot_convergence", "plot_wave_structure"]
 
-_STYLE = {
+# Typed as Any on purpose: matplotlib types rcParams keys as a Literal union of
+# every setting it knows, which no plain dict literal can satisfy.
+_STYLE: Any = {
     "figure.dpi": 130,
     "savefig.dpi": 130,
     "font.size": 9,
@@ -141,10 +144,12 @@ def plot_wave_structure(problem, path: str | Path, t_max: float | None = None) -
                 color="tab:blue", alpha=0.12, lw=0,
             )
 
-        left_edge = star.speeds.get("left_shock", star.speeds.get("left_head"))
-        left_inner = star.speeds.get("left_shock", star.speeds.get("left_tail"))
-        right_inner = star.speeds.get("right_shock", star.speeds.get("right_tail"))
-        right_edge = star.speeds.get("right_shock", star.speeds.get("right_head"))
+        left_shock = star.left_wave == "shock"
+        right_shock = star.right_wave == "shock"
+        left_edge = star.speeds["left_shock" if left_shock else "left_head"]
+        left_inner = star.speeds["left_shock" if left_shock else "left_tail"]
+        right_inner = star.speeds["right_shock" if right_shock else "right_tail"]
+        right_edge = star.speeds["right_shock" if right_shock else "right_head"]
         t_label = 0.72 * t_max
 
         def position(speed: float) -> float:

@@ -20,7 +20,8 @@ classifiers = [
 dependencies = ["numpy>=1.24", "matplotlib>=3.7"]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4"]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4", "mypy>=1.8"]
+notebook = ["nbformat>=5.9", "nbclient>=0.9", "ipykernel>=6.29"]
 
 [project.scripts]
 euler1d = "euler1d.cli:main"
@@ -31,14 +32,28 @@ Repository = "https://github.com/tu-h-nguyn/The-Finite-Volume-Method-for-One-Dim
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+# Ship the marker so downstream users actually get the type hints.
+euler1d = ["py.typed"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests", "src"]
 addopts = "-q --strict-markers --doctest-modules"
 filterwarnings = ["error::RuntimeWarning"]
 
+[tool.mypy]
+python_version = "3.10"
+files = ["src/euler1d"]
+ignore_missing_imports = true
+
 [tool.coverage.run]
 source = ["euler1d"]
+# Figure rendering is exercised by scripts/ and the notebook, not by unit tests.
 omit = ["*/plotting.py"]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
 
 [tool.ruff]
 line-length = 100
