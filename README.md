@@ -262,6 +262,21 @@ lại bằng một lệnh duy nhất: `make results`.
 4. A. Harten, P. D. Lax, B. van Leer, "On upstream differencing and Godunov-type schemes for hyperbolic conservation laws", *SIAM Review* **25**(1), 1983.
 5. S. Gottlieb, C.-W. Shu, E. Tadmor, "Strong stability-preserving high-order time discretization methods", *SIAM Review* **43**(1), 2001.
 
+## AI transparency
+
+This repository was built with Claude (Anthropic) as a coding assistant: 16 of its 20
+commits carry a Claude co-author trailer. What that covers, and what it does not:
+
+- **The mathematics is the coursework.** The schemes, the exact Riemann solver, the
+  MATLAB prototype and the report are the four authors' work.
+- **The AI-assisted commits are engineering.** CI, the Makefile, licence and citation
+  metadata, type checking and coverage enforcement, the README, the executed demo
+  notebook, and the shock-tube animation.
+- **Nothing here is trusted because it was written confidently.** Every scheme is
+  measured against the exact Riemann solution, the grid-convergence study checks that
+  each one reaches its design order, and 133 tests run on every push. A wrong answer
+  fails the build regardless of who or what wrote the line.
+
 ## Authors
 
 Nông Thanh Toàn (23110212) · Nguyễn Hoàng Tú (23110220) ·
